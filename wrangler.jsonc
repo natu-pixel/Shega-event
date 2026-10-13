@@ -1,7 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "shega-events",
+  "name": "shega",
   "compatibility_date": "2026-10-06",
+  "main": ".open-next/worker.js",
+  "assets": {
+    "directory": ".open-next/assets"
+  },
   "observability": {
     "enabled": true
   },
