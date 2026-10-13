@@ -1,0 +1,20 @@
+{
+  "brand": "Shega Events and Promotion",
+  "retrieved_at_utc": "2026-09-21T05:12:42Z",
+  "source_page_url": "https://www.instagram.com/shega_events/",
+  "source_account": "@shega_events",
+  "source_type": "Public profile picture, not a Story or Highlight",
+  "source_image_url": "https://scontent.cdninstagram.com/v/t51.82787-19/639456347_18114293821633018_8476513422885506663_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=108&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43NDYuQzMifQ%3D%3D&_nc_ohc=0lNAsDS0EUYQ7kNvwH16sfU&_nc_oc=AdqGK1wp5-1KwLiQoglP8_3QK-1GjLrAwTGQ4f_iLPk6A-v_qqCgDMbCaTXUJ_ntsgw&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=nEKwQuWWjTHUm4Jtj2iFUg&_nc_ss=78a8c&oh=00_AQLgRKOe_r7qiAM-ylWw7jLesJeKnAO1p-4P-B8DixF5aA&oe=6AB68C8D",
+  "identity_check": "Black-background version displayed by the official @shega_events Instagram profile. Original orange Ethiopic artwork and light Events lettering are retained; this is not a recoloring of the older white-background logo or the unrelated Shega news/media brand.",
+  "original_filename": "shega-events-black.jpg",
+  "original_sha256": "4bd417e60a16c5ed9a09afe8acf370037f97a589a5c650bae0e30648f7493071",
+  "display_filename": "shega-events-black.jpg",
+  "display_sha256": "4bd417e60a16c5ed9a09afe8acf370037f97a589a5c650bae0e30648f7493071",
+  "display_dimensions": [150, 150],
+  "favicon_filename": "app/icon.png",
+  "favicon_dimensions": [128, 128],
+  "favicon_sha256": "39389584dbc50fc41c27f240757b79aef6f7ddde1fe5aaa6c2435302b01c7007",
+  "processing": "Displayed JPEG is the exact public profile image, saved byte-for-byte with no crop, recoloring, background removal or upscaling. Favicon is a 128px LANCZOS downsample saved as PNG. Display widths are 64px on desktop and 56px on mobile, short landscape and in the footer.",
+  "previous_version": "The older white-background artwork and its source record remain in provenance.json, shega-events-source.jpg and shega-events-logo.png for reference; they are no longer used by the website.",
+  "publication_note": "Official publicly displayed company mark retrieved for the user-requested brand replacement; not a third-party recreation. Public availability does not establish permission for republication; confirm brand authorization before deployment."
+}

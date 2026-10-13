@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.env*
+!.env.example
+__pycache__/
+.venv-assets/
+.open-next/
+.wrangler/
+.render-worktree/
+# PNG frames are the archival source; WebP copies are served by the site.
+public/frames/PNG Sequence/*.png

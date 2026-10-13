@@ -1,0 +1,24 @@
+{
+  "brand": "Shega Events and Promotion",
+  "retrieved_at_utc": "2026-09-20T19:33:15.711278+00:00",
+  "source_page_url": "https://t.me/shega_events",
+  "corroborating_source": "https://linktr.ee/shega_events",
+  "corroborating_original_logo_url": "https://ugc.production.linktr.ee/2uzDgNmSWO4bMGB8jstQ_6s45A7GW666aqQBH",
+  "identity_check": "Matching orange Ethiopic mark and black Events lettering on both official channel and its cross-linked social hub. Not the unrelated Shega news/media brand.",
+  "original_filename": "shega-events-source.jpg",
+  "original_sha256": "350aeb681898b9e94b9c7631ad33dbc042b8614d48f526d7516abaca44780fca",
+  "display_filename": "shega-events-logo.png",
+  "display_sha256": "0dd22fce92821724c1265b60e5ac86464950264844495682d4e8ecfea341607f",
+  "display_dimensions": [
+    298,
+    170
+  ],
+  "crop_box": [
+    13,
+    60,
+    311,
+    230
+  ],
+  "processing": "Whitespace-only crop from original channel image, stored losslessly as PNG. Original colors, shapes and Events lettering preserved. Favicon is a downscaled copy on a white square; no redrawing, recoloring or upscaling.",
+  "publication_note": "Official publicly displayed company mark retrieved for the user-requested brand replacement; not a third-party recreation."
+}

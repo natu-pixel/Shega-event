@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shega-events",
+  "compatibility_date": "2026-10-06",
+  "observability": {
+    "enabled": true
+  },
+  "account_id": "650ca8cde8dff7e84cacaaeb07464446",
+  "r2_buckets": [
+    {
+      "bucket_name": "shega-frames",
+      "binding": "shega_frames"
+    }
+  ]
+}
