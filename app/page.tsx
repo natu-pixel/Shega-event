@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ScrollStory } from "@/components/scroll-story";
+import CoverflowGallery, { GalleryItem } from "@/components/CoverflowGallery";
 
 export default function ShegaLandingPage() {
   const [activeArchive, setActiveArchive] = useState<number>(2);
@@ -31,6 +32,117 @@ export default function ShegaLandingPage() {
     { id: 3, label: "LIGHTING & STAGE DESIGN" },
     { id: 4, label: "AFTERHOURS SESSIONS" },
     { id: 5, label: "FINALE & ENCORE" },
+  ];
+
+  const galleryItems: GalleryItem[] = [
+    {
+      id: 1,
+      title: "Kemn Ljemr - Concert reel",
+      image: "/events/kemen-lejemer/02-user-selected-entrance.jpg",
+      href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
+      mediaType: "video",
+      category: "kemen",
+      count: 1,
+    },
+    {
+      id: 2,
+      title: "Hello Hawassa",
+      image: "/events/halo-hawassa/01-yohana-stage-crowd.jpg",
+      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
+      mediaType: "video",
+      category: "hawassa",
+      count: 1,
+    },
+    {
+      id: 3,
+      title: "Kemn Ljemr - Live album",
+      image: "/events/kemen-lejemer/01-live-duet.jpg",
+      href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
+      mediaType: "photo",
+      category: "kemen",
+      count: 1,
+    },
+    {
+      id: 4,
+      title: "Hello Hawassa - Yohanna live",
+      image: "/events/yohanna-halo-hawassa.jpg",
+      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
+      mediaType: "photo",
+      category: "hawassa",
+      count: 1,
+    },
+    {
+      id: 5,
+      title: "Bermel Fest - Pyro and lights",
+      image: "/events/rophnan-finale/01-aerial-stage-and-crowd.jpg",
+      href: "https://www.instagram.com/rophnan/p/DUGMfeZgpqV/",
+      mediaType: "video",
+      category: "bermel",
+      count: 1,
+    },
+    {
+      id: 6,
+      title: "Bermel Fest - Crowd energy",
+      image: "/events/rophnan-finale/04-user-selected-crowd.jpg",
+      href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/",
+      mediaType: "photo",
+      category: "bermel",
+      count: 1,
+    },
+    {
+      id: 7,
+      title: "Hello Hawassa - Main stage",
+      image: "/events/halo-hawassa/02-hawassa-concert.jpg",
+      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
+      mediaType: "video",
+      category: "hawassa",
+      count: 1,
+    },
+    {
+      id: 8,
+      title: "Bermel Fest - Night celebration",
+      image: "/events/keberaf/01-concert.jpg",
+      href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/",
+      mediaType: "photo",
+      category: "bermel",
+      count: 1,
+    },
+    {
+      id: 9,
+      title: "Kemn Ljemr - Solo entrance",
+      image: "/events/kemen-lejemer/03-solo-performance.jpg",
+      href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
+      mediaType: "photo",
+      category: "kemen",
+      count: 1,
+    },
+    {
+      id: 10,
+      title: "Hello Hawassa - Festival view",
+      image: "/events/halo-hawassa/03-hawassa-stage-wide.jpg",
+      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
+      mediaType: "photo",
+      category: "hawassa",
+      count: 1,
+    },
+    {
+      id: 11,
+      title: "Bermel Fest - Sound setup",
+      image: "/events/wazema/01-live-performance.jpg",
+      href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/",
+      mediaType: "video",
+      category: "bermel",
+      count: 1,
+    },
+    {
+      id: 12,
+      title: "Bermel Fest - Finale smoke & stage",
+      image: "/events/wazema/02-stage-smoke.jpg",
+      href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/",
+      mediaType: "photo",
+      category: "bermel",
+      count: 1,
+    },
   ];
 
   return (
@@ -92,7 +204,18 @@ export default function ShegaLandingPage() {
       </section>
 
       {/* =====================================================================
-          3. FEATURED EVENTS SHOWCASE (BLACK FRAME + WHITE CARDS)
+          3. SCROLLING GALLERY (Coverflow — 9+ linked moments)
+      ===================================================================== */}
+      <section className="shega-scrolling-gallery-section">
+        <CoverflowGallery
+          items={galleryItems}
+          heading="All events"
+          tagline="A different angle. A new memory."
+        />
+      </section>
+
+      {/* =====================================================================
+          4. FEATURED EVENTS SHOWCASE (BLACK FRAME + WHITE CARDS)
       ===================================================================== */}
       <section className="shega-events-section">
         {eventShowcases.map((event) => (
