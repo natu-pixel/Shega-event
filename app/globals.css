@@ -957,3 +957,612 @@ h2 em { font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter
   .hero-intro { display: none; }
   .chapter-caption { opacity: 1; }
 }
+
+/* ==========================================================================
+   SHEGA LANDING PAGE REDESIGN (SCOPED SEMANTIC CSS — shega-* namespace)
+   Safe to keep alongside existing styles; no Tailwind, no external deps.
+   ========================================================================== */
+
+.shega-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #0a0a0a;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.shega-page *,
+.shega-page *::before,
+.shega-page *::after {
+  box-sizing: border-box;
+}
+
+.shega-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.shega-orange-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ea7b26;
+  flex-shrink: 0;
+}
+
+/* 1. HERO SLOT — dark, block-level so the embedded ScrollStory hero fills cleanly */
+.shega-hero-slot {
+  width: 100%;
+  min-height: 75vh;
+  background-color: #0a0a0a;
+  display: block;
+  padding: 0;
+  position: relative;
+}
+
+.shega-hero-placeholder-box {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.12);
+  color: #ffffff;
+  padding: 16px 24px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* 2. ABOUT / INTRO SECTION */
+.shega-about-section {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  padding: 80px 56px;
+}
+
+.shega-about-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.shega-about-headline {
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin: 0;
+  max-width: 760px;
+}
+
+.shega-about-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.shega-about-bio {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #525252;
+  margin: 0;
+}
+
+.shega-stats-list {
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+}
+
+.shega-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 11px;
+}
+
+.shega-stat-label {
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.shega-stat-value {
+  color: #0a0a0a;
+  font-weight: 600;
+}
+
+.shega-pill-outline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid #d4d4d4;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shega-pill-outline-btn:hover {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  border-color: #0a0a0a;
+}
+
+/* 3. FEATURED EVENTS SHOWCASE */
+.shega-events-section {
+  background-color: #0a0a0a;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shega-event-card {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  min-height: 390px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.shega-event-top-bar {
+  width: 110px;
+  height: 14px;
+  background-color: #1a1a1a;
+}
+
+.shega-event-media-placeholder {
+  margin: auto 0;
+  text-align: center;
+  font-size: 12px;
+  color: #404040;
+  font-weight: 500;
+}
+
+.shega-event-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.shega-event-title {
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.shega-event-category {
+  font-size: 10px;
+  color: #737373;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.shega-event-year {
+  font-size: 9px;
+  color: #a3a3a3;
+  margin: 0 0 8px 0;
+}
+
+.shega-event-btn {
+  background-color: #111111;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.shega-event-btn:hover {
+  background-color: #ea7b26;
+}
+
+/* 4. THROUGH OUR EYES (VISUAL ARCHIVES) */
+.shega-archives-section {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  padding: 72px 24px 24px 24px;
+}
+
+.shega-archives-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 40px;
+  padding: 0 24px;
+}
+
+.shega-section-title-lg {
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.shega-eyebrow-dark {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin: 0 0 6px 0;
+  color: #0a0a0a;
+}
+
+.shega-archives-desc {
+  font-size: 13px;
+  color: #525252;
+  max-width: 360px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.shega-archives-strip-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  width: 100%;
+  height: 360px;
+}
+
+.shega-archive-panel {
+  background-color: #ea7b26;
+  flex: 1;
+  cursor: pointer;
+  transition: flex 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.shega-archive-panel.is-expanded {
+  flex: 2.8;
+}
+
+.shega-archive-caption {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  max-width: 190px;
+  text-align: left;
+}
+
+.shega-archive-panel.is-expanded .shega-archive-caption {
+  opacity: 1;
+}
+
+.shega-archive-caption p {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0a0a0a;
+  line-height: 1.3;
+  margin: 0;
+}
+
+/* 5. DARK SECTION: NIGHTMAKERS + CONTACT */
+.shega-dark-section {
+  background-color: #050505;
+  color: #ffffff;
+  padding: 72px 56px 88px 56px;
+}
+
+.shega-switcher-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.shega-tab-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+.shega-tab-btn.is-active,
+.shega-tab-btn:hover {
+  opacity: 1;
+}
+
+.shega-switcher-or {
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shega-divider-stage {
+  margin: 36px 0 80px 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  min-height: 240px;
+}
+
+.shega-vertical-line {
+  grid-column: span 3;
+  border-right: 1px solid rgba(255, 255, 255, 0.45);
+  height: 100%;
+}
+
+.shega-divider-content {
+  grid-column: span 9;
+}
+
+.shega-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.shega-contact-left {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.shega-eyebrow-light {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #d4d4d4;
+  margin-bottom: 14px;
+}
+
+.shega-contact-title {
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.shega-contact-subtext {
+  margin: 24px 0 0 0;
+  font-size: 12px;
+  color: #a3a3a3;
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+.shega-contact-info-list {
+  max-width: 440px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.shega-contact-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.shega-contact-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #ea7b26;
+  font-weight: 700;
+}
+
+.shega-contact-link {
+  color: #e5e5e5;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.shega-contact-link:hover {
+  color: #ea7b26;
+}
+
+.shega-contact-footnote {
+  margin: 8px 0 0 0;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #737373;
+}
+
+/* RIGHT FORM CARD */
+.shega-form-card {
+  background-color: #1c110a;
+  border: 1px solid #2e1c10;
+  border-radius: 12px;
+  padding: 36px;
+}
+
+.shega-form-heading {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  margin: 0 0 24px 0;
+}
+
+.shega-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shega-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.shega-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #a3a3a3;
+  margin-bottom: 6px;
+}
+
+.shega-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0 0 8px 0;
+  font-size: 12px;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.shega-input::placeholder {
+  color: #525252;
+}
+
+.shega-input:focus {
+  border-bottom-color: #ea7b26;
+}
+
+.shega-form-actions {
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shega-submit-pill {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.shega-submit-pill:hover {
+  background-color: #e5e5e5;
+}
+
+.shega-submit-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: #ea7b26;
+  color: #0a0a0a;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.shega-submit-arrow:hover {
+  background-color: #ff8c35;
+}
+
+/* 6. ORANGE FOOTER */
+.shega-footer {
+  background-color: #ea7b26;
+  color: #ffffff;
+  padding: 40px 56px;
+}
+
+.shega-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.shega-footer-col {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.shega-footer-center {
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+}
+
+.shega-footer-center a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.shega-footer-center a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 960px) {
+  .shega-about-section,
+  .shega-dark-section,
+  .shega-footer {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .shega-about-grid,
+  .shega-archives-header,
+  .shega-contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shega-archives-strip-row {
+    flex-direction: column;
+    height: 460px;
+  }
+
+  .shega-footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
