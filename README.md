@@ -21,7 +21,9 @@ Open <http://127.0.0.1:3000>. Individual studies:
 - <http://127.0.0.1:3000/preview/yohana>
 - <http://127.0.0.1:3000/preview/rophnan>
 
-For production: `npm run build`, then `npm start`.
+For a local Node.js production server, run `npm run build:node`, then `npm start`.
+Cloudflare Workers builds use `npm run build` to create the OpenNext worker output;
+the deploy command can then run `npx wrangler deploy`.
 
 ## Generated frames
 
