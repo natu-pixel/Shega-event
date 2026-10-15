@@ -85,6 +85,9 @@ button { border: 0; }
 /* ─── Scroll Story ───────────────────────────────────────────────────── */
 .scroll-story { position: relative; height: calc(var(--story-screens) * 100svh); background: var(--black); }
 .story-stage { --intro: 1; --intro-y: 0px; --bridge-title: 0; --exit-title: 0; --film-progress: 0; --chapter-label: 1; position: sticky; top: 0; height: 100svh; width: 100%; max-width: 100%; overflow: hidden; isolation: isolate; background: var(--black); }
+.skip-story-button { position: absolute; z-index: 2; top: 92px; right: var(--gutter); display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; background: rgba(10,10,10,.68); color: var(--white); font-size: 12px; font-weight: 600; backdrop-filter: blur(10px); transition: background .2s, border-color .2s; }
+.skip-story-button:hover { border-color: var(--orange); background: rgba(10,10,10,.9); }
+.skip-story-button span { color: var(--orange); font-size: 16px; }
 .scroll-story[data-introduction="false"] .story-stage { --intro: 0; }
 .story-canvas, .story-poster, .film-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
 .story-canvas { z-index: -2; opacity: 0; }
