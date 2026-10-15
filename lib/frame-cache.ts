@@ -15,6 +15,8 @@ type Focus = { chapter: Chapter; current: number; target: number; next?: Chapter
 const MIB = 1024 * 1024;
 const DECODED_BUDGET = 64 * MIB;
 const ENCODED_BUDGET = 48 * MIB;
+const DECODE_RADIUS = 4;
+const PREFETCH_AHEAD = 12;
 const keyFor = (chapter: Chapter, index: number) => `${chapter.id}:${index}`;
 
 export class FrameCache {
@@ -74,16 +76,15 @@ export class FrameCache {
     this.protectedKeys = new Set([keyFor(chapter, current), keyFor(chapter, target)]);
     this.enqueue(chapter, current, true);
     this.enqueue(chapter, target, true);
-    for (let offset = 1; offset <= 4; offset++) {
+    for (let offset = 1; offset <= DECODE_RADIUS; offset++) {
       this.enqueue(chapter, current + offset, true);
       this.enqueue(chapter, current - offset, true);
     }
-    this.enqueue(chapter, 0, true);
-    if (next) this.enqueue(next, 0, true);
-    // Sparse coverage comes before the remaining downloads; distant frames stay encoded.
-    for (let index = 0; index < chapter.frames; index += 12) this.enqueue(chapter, index, false);
-    this.enqueue(chapter, chapter.frames - 1, false);
-    for (let index = 0; index < chapter.frames; index++) this.enqueue(chapter, index, false);
+    const direction = Math.sign(target - current) || 1;
+    for (let offset = DECODE_RADIUS + 1; offset <= DECODE_RADIUS + PREFETCH_AHEAD; offset++) {
+      this.enqueue(chapter, current + direction * offset, false);
+    }
+    if (next) this.enqueue(next, 0, false);
     this.pump();
   }
 
