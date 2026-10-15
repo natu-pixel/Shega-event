@@ -14,10 +14,10 @@ type Props = {
 };
 
 const DEFAULT_LINKS: NavLink[] = [
-  { label: "Home", href: "#home" },
+  { label: "Experience", href: "#experience" },
   { label: "Gallery", href: "#gallery" },
-  { label: "About Us", href: "#about" },
-  { label: "Partners", href: "#partners" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Navbar({
@@ -80,7 +80,7 @@ export default function Navbar({
         className={`nv ${scrolled ? "is-glass" : ""} ${hidden ? "is-hidden" : ""}`}
       >
         <div className="nv__inner">
-          <a href="#home" className="nv__logo" aria-label={logoAlt}>
+          <a href="#experience" className="nv__logo" aria-label={logoAlt}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={logoSrc} alt={logoAlt} height={40} />
           </a>

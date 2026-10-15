@@ -2,19 +2,53 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
-import { CHAPTERS, frameUrl, posterUrl, YOHANNA_CONCERT_PHOTO } from "../lib/story.ts";
+import { CHAPTERS, frameUrl, posterUrl } from "../lib/story.ts";
 
-test("every chapter has specific event information and a documented source", () => {
-  assert.equal(CHAPTERS.length, 5);
-  assert.equal(new Set(CHAPTERS.map((chapter) => chapter.details.description)).size, 5);
-  for (const chapter of CHAPTERS) {
-    assert.ok(chapter.details.title.length > 5);
-    assert.ok(chapter.details.description.length > 120);
-    assert.equal(chapter.details.facts.length, 2);
-    assert.equal(new URL(chapter.details.source.url).protocol, "https:");
-    assert.ok(chapter.details.attributionNote.length > 50);
-    assert.ok(!/\b202[0-9]\b/.test(chapter.details.description), "Do not assign unverified dates to local films");
+const FRAMES = new URL("../public/frames/PNG Sequence/", import.meta.url);
+const eventSlugs = ["kemen-lejemer", "rophnan-finale", "keberaf", "halo-hawassa", "wazema", "great-arbaminch-run"] as const;
+
+test("the hero is one chapter with documented, dateless copy", () => {
+  assert.equal(CHAPTERS.length, 1);
+  const [chapter] = CHAPTERS;
+  assert.equal(new URL(chapter.details.source.url).protocol, "https:");
+  assert.ok(chapter.details.attributionNote.length > 50);
+  assert.ok(!/\b202[0-9]\b/.test(chapter.details.description), "Do not assign unverified dates to local films");
+});
+
+test("frame URLs match the two supplied PNG-sequence parts exactly", () => {
+  const [chapter] = CHAPTERS;
+  // Part 1: frame_0032..frame_1000, served as four-digit names.
+  assert.equal(frameUrl(chapter, 0), "/frames/PNG%20Sequence/frame_0032.webp");
+  assert.equal(frameUrl(chapter, 1), "/frames/PNG%20Sequence/frame_0033.webp");
+  assert.equal(frameUrl(chapter, 968), "/frames/PNG%20Sequence/frame_1000.webp");
+  // Part 2: "Shega Website Video 01000..01733", served as five-digit names.
+  assert.equal(frameUrl(chapter, 969), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001000.webp");
+  assert.equal(frameUrl(chapter, chapter.frames - 1), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001733.webp");
+  // Out-of-range indices clamp to the part boundaries rather than escaping the folder.
+  assert.equal(frameUrl(chapter, -5), "/frames/PNG%20Sequence/frame_0032.webp");
+  assert.equal(frameUrl(chapter, 5000), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001733.webp");
+  assert.equal(chapter.frames, 1703);
+});
+
+test("every first, last and sampled hero frame has a served WebP copy", () => {
+  const [chapter] = CHAPTERS;
+  const requested = new Set<number>([0, 1, chapter.frames - 1]);
+  for (let index = 0; index < chapter.frames; index += 17) requested.add(index);
+  for (const index of requested) {
+    const file = decodeURIComponent(frameUrl(chapter, index).split("/").pop() ?? "");
+    assert.ok(existsSync(new URL(file, FRAMES)), `Missing served frame: ${file}`);
   }
+  assert.equal(posterUrl(chapter), "/frames/PNG%20Sequence/frame_0032.webp");
+  const poster = decodeURIComponent(posterUrl(chapter).split("/").pop() ?? "");
+  assert.ok(existsSync(new URL(poster, FRAMES)), `Missing poster frame: ${poster}`);
+});
+
+test("a chapter revision invalidates both frame and poster URLs", () => {
+  const [chapter] = CHAPTERS;
+  const revised = { ...chapter, assetRevision: "abc123" };
+  assert.equal(frameUrl(revised, 0), "/frames/PNG%20Sequence/frame_0032.webp?v=abc123");
+  assert.equal(posterUrl(revised), "/frames/PNG%20Sequence/frame_0032.webp?v=abc123");
+  assert.equal(frameUrl(chapter, 0).includes("?"), false);
 });
 
 test("the displayed brand asset matches its original-source provenance", () => {
@@ -32,40 +66,21 @@ test("the displayed brand asset matches its original-source provenance", () => {
   assert.ok(!existsSync(new URL("../app/icon.svg", import.meta.url)), "Fabricated icon must not remain active");
 });
 
-test("Yohanna's clear concert photo matches its official photo-post provenance", () => {
-  const chapter = CHAPTERS.find((item) => item.id === "yohana");
-  assert.equal(chapter?.details.photo, YOHANNA_CONCERT_PHOTO);
-  const metadata = JSON.parse(readFileSync(new URL("../public/events/yohanna-photo-provenance.json", import.meta.url), "utf8"));
-  const photo = YOHANNA_CONCERT_PHOTO;
-  const image = readFileSync(new URL(`../public${photo.src}`, import.meta.url));
-  assert.equal(createHash("sha256").update(image).digest("hex"), metadata.sha256);
-  assert.equal(metadata.source_page_url, photo.source);
-  assert.equal(metadata.source_account, "@yohanaoriginal");
-  assert.equal(photo.src, `/events/${metadata.filename}`);
-  assert.deepEqual([photo.width, photo.height], metadata.dimensions);
-  assert.match(photo.alt, /Yohanna.*Halo Hawassa/);
-  assert.ok(metadata.permission_status.includes("permission"));
-  assert.equal(CHAPTERS.filter((item) => item.details.photo).length, 1);
-});
-
-test("chapter asset URLs match the generated revision and invalidate changed footage", () => {
-  const manifest = JSON.parse(readFileSync(new URL("../public/asset-manifest.json", import.meta.url), "utf8"));
-  for (const chapter of CHAPTERS) {
-    const sequence = manifest.sequences.find((entry: { id: string }) => entry.id === chapter.id);
-    assert.ok(sequence, `Missing generated sequence: ${chapter.id}`);
-    assert.equal(chapter.assetRevision, sequence.asset_revision);
-    if (chapter.assetRevision) {
-      assert.equal(chapter.assetRevision, sequence.source_sha256);
-      const video = readFileSync(new URL(`../${sequence.source}`, import.meta.url));
-      assert.equal(createHash("sha256").update(video).digest("hex"), chapter.assetRevision);
+test("every published event photograph keeps its source, credit and permission note", () => {
+  const sources = JSON.parse(readFileSync(new URL("../public/events/sources.json", import.meta.url), "utf8"));
+  let checked = 0;
+  for (const slug of eventSlugs) {
+    const event = sources.events.find((entry: { event_slug: string }) => entry.event_slug === slug);
+    assert.ok(event, `Missing event record: ${slug}`);
+    assert.equal(event.images.length, 4, `${slug} should publish exactly four credited photographs`);
+    for (const image of event.images) {
+      const file = readFileSync(new URL(`../public/events/${slug}/${image.filename}`, import.meta.url));
+      assert.equal(file.readUInt32BE(16) > 0 && file.readUInt32BE(20) > 0, true, `Unreadable image: ${slug}/${image.filename}`);
+      assert.ok(image.credit.length > 10, `Missing credit on ${slug}/${image.filename}`);
+      assert.match(image.permission_status, /permission|licen[cs]/i, `Missing permission note on ${slug}/${image.filename}`);
+      checked++;
     }
-    const servedPattern = sequence.frame_url_pattern.replace(".png", ".webp");
-    assert.equal(frameUrl(chapter, 0), servedPattern.replace("{index:03d}", "001"));
-    assert.equal(frameUrl(chapter, 149), servedPattern.replace("{index:03d}", "150"));
-    for (const index of ["001", "150"]) {
-      assert.ok(existsSync(new URL(`../public/frames/${chapter.id}/frame-${index}.webp`, import.meta.url)),
-        `Missing served WebP frame ${index} for ${chapter.id}; run scripts/optimize-frames.py`);
-    }
-    assert.equal(posterUrl(chapter), sequence.poster_url);
   }
+  assert.equal(checked, eventSlugs.length * 4);
+  assert.match(sources.publication_notice, /not a republication license/);
 });

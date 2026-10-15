@@ -59,7 +59,7 @@ export function sampleStory(distance: number, counts: readonly number[]): StoryS
       return {
         ...base, chapter, titleChapter: chapter, phase: "playback",
         frame: frameAtProgress(progress, counts[chapter]),
-        intro: chapter === 0 ? 1 - smoothstep(progress / 0.24) : 0,
+        intro: chapter === 0 ? 1 - smoothstep(progress / 0.05) : 0,
         zoom: lerp(1.035, 1.065, progress),
       };
     }
@@ -100,18 +100,6 @@ export function coverRect(
   return {
     x: clamp((width - drawWidth) * focalX + panX * width, width - drawWidth, 0),
     y: clamp((height - drawHeight) * focalY + panY * height, height - drawHeight, 0),
-    width: drawWidth,
-    height: drawHeight,
-  };
-}
-
-export function containRect(width: number, height: number, imageWidth: number, imageHeight: number) {
-  const scale = Math.min(width / imageWidth, height / imageHeight);
-  const drawWidth = imageWidth * scale;
-  const drawHeight = imageHeight * scale;
-  return {
-    x: (width - drawWidth) / 2,
-    y: (height - drawHeight) / 2,
     width: drawWidth,
     height: drawHeight,
   };

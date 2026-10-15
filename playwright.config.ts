@@ -18,4 +18,16 @@ export default defineConfig({
     reuseExistingServer: true,
     timeout: 120_000,
   },
+  projects: [
+    {
+      name: "scroll",
+      testMatch: /scroll\.spec\.ts/,
+      use: { viewport: { width: 1440, height: 900 } },
+    },
+    {
+      name: "portfolio",
+      testMatch: /portfolio\.spec\.ts/,
+      use: { viewport: { width: 1440, height: 900 } },
+    },
+  ],
 });

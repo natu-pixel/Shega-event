@@ -1,16 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/lib/site";
 import "./CoverflowGallery.css";
 
+export const CATEGORIES = ["bermel", "rophnan", "shega"] as const;
+export type Category = (typeof CATEGORIES)[number];
+
 export type GalleryItem = {
-  id: string | number;
+  id: string;
   title: string;
-  image: string; // poster / thumbnail URL
-  href: string; // Instagram link
-  mediaType: "video" | "photo";
-  category?: "bermel" | "kemen" | "hawassa";
-  count?: number; // e.g. 1 video, 3 photos
+  image: string;
+  href: string;
+  category: Category;
+  credit: string;
+  mediaType?: "photo" | "video";
 };
 
 type Props = {
@@ -19,22 +23,35 @@ type Props = {
   tagline?: string;
 };
 
+const CATEGORY_LABELS: Record<Category, string> = {
+  bermel: "Bermel Fest",
+  rophnan: "Rophnan",
+  shega: "Shega Events",
+};
+
 const VISIBLE_RANGE = 2; // cards shown on each side of the active one
 
 export default function CoverflowGallery({
   items,
-  heading = "All events",
+  heading = "All moments",
   tagline = "A different angle. A new memory.",
 }: Props) {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [activeCategory, setActiveCategory] = useState<"all" | Category>("all");
   const [active, setActive] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
-  const filteredItems = items.filter((item) =>
-    activeCategory === "all" ? true : item.category === activeCategory
-  );
-
+  const filteredItems =
+    activeCategory === "all" ? items : items.filter((item) => item.category === activeCategory);
   const total = filteredItems.length;
+
+  const filters = [
+    { id: "all" as const, label: heading, count: items.length },
+    ...CATEGORIES.map((category) => ({
+      id: category,
+      label: CATEGORY_LABELS[category],
+      count: items.filter((item) => item.category === category).length,
+    })).filter((filter) => filter.count > 0),
+  ];
 
   // Reset active card when filter changes
   useEffect(() => {
@@ -81,66 +98,32 @@ export default function CoverflowGallery({
   const current = filteredItems[active] ?? filteredItems[0];
 
   return (
-    <section className="cf" id="gallery" aria-label="Portfolio gallery">
-      {/* ── Category Filters ─────────────────────────────────────── */}
-      <div className="cf__filters" role="tablist" aria-label="Moment categories">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeCategory === "all"}
-          className={`cf__filter-btn ${activeCategory === "all" ? "is-active" : ""}`}
-          onClick={() => setActiveCategory("all")}
-        >
-          All moments <span className="cf__filter-count">12</span>
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeCategory === "bermel"}
-          className={`cf__filter-btn ${activeCategory === "bermel" ? "is-active" : ""}`}
-          onClick={() => setActiveCategory("bermel")}
-        >
-          Bermel Fest <span className="cf__filter-count">5</span>
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeCategory === "kemen"}
-          className={`cf__filter-btn ${activeCategory === "kemen" ? "is-active" : ""}`}
-          onClick={() => setActiveCategory("kemen")}
-        >
-          Kemn Ljemr – Album Release <span className="cf__filter-count">3</span>
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeCategory === "hawassa"}
-          className={`cf__filter-btn ${activeCategory === "hawassa" ? "is-active" : ""}`}
-          onClick={() => setActiveCategory("hawassa")}
-        >
-          Hello Hawassa <span className="cf__filter-count">4</span>
-        </button>
+    <section className="cf" id="gallery" aria-label="Event photograph gallery">
+      {/* ── Category filters ─────────────────────────────────────── */}
+      <div className="cf__filters" role="tablist" aria-label="Event categories">
+        {filters.map((filter) => (
+          <button
+            key={filter.id}
+            type="button"
+            role="tab"
+            aria-selected={activeCategory === filter.id}
+            className={`cf__filter-btn ${activeCategory === filter.id ? "is-active" : ""}`}
+            onClick={() => setActiveCategory(filter.id)}
+          >
+            {filter.label} <span className="cf__filter-count">{filter.count}</span>
+          </button>
+        ))}
       </div>
 
       <header className="cf__top">
         <span className="cf__crumb">
-          {total} collections /{" "}
-          {activeCategory === "all"
-            ? heading
-            : activeCategory === "bermel"
-            ? "Bermel Fest"
-            : activeCategory === "kemen"
-            ? "Kemn Ljemr"
-            : "Hello Hawassa"}
+          {String(total).padStart(2, "0")} moments /{" "}
+          {activeCategory === "all" ? heading : CATEGORY_LABELS[activeCategory]}
         </span>
         <span className="cf__tagline">{tagline}</span>
       </header>
 
-      <div
-        className="cf__stage"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
+      <div className="cf__stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         {filteredItems.map((item, i) => {
           const offset = offsetOf(i);
           const abs = Math.abs(offset);
@@ -165,18 +148,8 @@ export default function CoverflowGallery({
             >
               <div className="cf__media">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.image} alt={item.title} draggable={false} />
-                <span className="cf__badge">
-                  {item.count ?? 1} {item.mediaType}
-                  {(item.count ?? 1) > 1 ? "s" : ""}
-                </span>
-                {item.mediaType === "video" && (
-                  <span className="cf__play" aria-hidden>
-                    <svg viewBox="0 0 24 24" width="18" height="18">
-                      <path d="M8 5v14l11-7z" fill="currentColor" />
-                    </svg>
-                  </span>
-                )}
+                <img src={item.image} alt={item.title} draggable={false} loading="lazy" />
+                <span className="cf__badge">{item.credit}</span>
                 <div className="cf__shade" />
                 <h3 className="cf__title">{item.title}</h3>
               </div>
@@ -190,7 +163,7 @@ export default function CoverflowGallery({
               >
                 <span className="cf__foot-left">
                   <InstagramIcon />
-                  Visit Instagram
+                  Open the original post
                 </span>
                 <ArrowUpRight />
               </a>
@@ -217,22 +190,16 @@ export default function CoverflowGallery({
         </button>
       </div>
 
-      <p className="cf__hint">Swipe or use the arrows. Open a post to step inside.</p>
+      <p className="cf__hint">Swipe or use the arrows. Every photo is credited to its original post.</p>
 
-      {/* ── Follow the story Pill ─────────────────────────────────── */}
       <div className="cf__follow-wrap">
-        <a
-          href="https://www.instagram.com/shega_events/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="cf__follow-pill"
-        >
+        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="cf__follow-pill">
           <div className="cf__follow-left">
             <InstagramIcon />
-            <span>Follow the story</span>
+            <span>See the full archive</span>
           </div>
           <div className="cf__follow-right">
-            <span>@shega_events</span>
+            <span>{INSTAGRAM_HANDLE}</span>
             <span aria-hidden="true">&#8599;</span>
           </div>
         </a>

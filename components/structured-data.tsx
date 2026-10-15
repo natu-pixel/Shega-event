@@ -1,6 +1,9 @@
 import { CHAPTERS } from "@/lib/story";
-import { INSTAGRAM_URL, PHONE_TEL, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { CONTACT_CHANNELS, INSTAGRAM_HANDLE, INSTAGRAM_URL, OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
+// Only verified facts are emitted. There is deliberately no telephone, email or
+// street address here until the real values exist; inventing them would produce
+// confidently wrong structured data in search results.
 const organization = {
   "@type": ["Organization", "LocalBusiness"],
   "@id": `${SITE_URL}/#organization`,
@@ -8,9 +11,7 @@ const organization = {
   alternateName: "ሸጋ ኢቨንትስ",
   url: SITE_URL,
   description: SITE_DESCRIPTION,
-  telephone: PHONE_TEL,
-  logo: `${SITE_URL}/brand/shega-events-logo.png`,
-  image: `${SITE_URL}/events/rophnan-finale.jpg`,
+  image: `${SITE_URL}${OG_IMAGE.url}`,
   address: {
     "@type": "PostalAddress",
     addressLocality: "Addis Ababa",
@@ -19,12 +20,13 @@ const organization = {
   areaServed: { "@type": "Country", name: "Ethiopia" },
   knowsAbout: ["Event planning", "Concert production", "Brand activations", "Festivals", "Live experiences"],
   sameAs: [INSTAGRAM_URL],
+  ...(CONTACT_CHANNELS.length ? { contactPoint: CONTACT_CHANNELS.map((channel) => ({ "@type": "ContactPoint", name: channel.label, url: channel.href })) } : {}),
 };
 
 const portfolio = {
   "@type": "ItemList",
   "@id": `${SITE_URL}/#portfolio`,
-  name: "Selected moments by Shega Events",
+  name: `Selected moments by ${SITE_NAME}`,
   itemListElement: CHAPTERS.map((chapter, index) => ({
     "@type": "ListItem",
     position: index + 1,
@@ -52,5 +54,11 @@ const website = {
 const graph = { "@context": "https://schema.org", "@graph": [organization, website, portfolio] };
 
 export function StructuredData() {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+      {/* Instagram is the only confirmed channel; keep it discoverable as a link. */}
+      <link rel="me" href={INSTAGRAM_URL} title={INSTAGRAM_HANDLE} />
+    </>
+  );
 }

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { Chapter } from "@/lib/story";
 
 export function EventDetails({ chapter, variant = "overlay" }: {
@@ -6,26 +5,8 @@ export function EventDetails({ chapter, variant = "overlay" }: {
   variant?: "overlay" | "overview";
 }) {
   const titleId = `${variant}-${chapter.id}-title`;
-  const photo = variant === "overview" ? chapter.details.photo : undefined;
   return (
-    <article className={`event-details event-details-${variant}${photo ? " event-details-with-photo" : ""}`} data-event-id={chapter.id} aria-labelledby={titleId}>
-      {photo && (
-        <figure className="event-artist">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            width={photo.width}
-            height={photo.height}
-            sizes="(max-width: 600px) 90vw, 500px"
-            loading="lazy"
-          />
-          <figcaption>
-            <a href={photo.source} target="_blank" rel="noopener noreferrer">
-              {photo.credit}<span aria-hidden="true">&#8599;</span>
-            </a>
-          </figcaption>
-        </figure>
-      )}
+    <article className={`event-details event-details-${variant}`} data-event-id={chapter.id} aria-labelledby={titleId}>
       <div className="event-copy">
         <div className="event-heading">
           <span className="eyebrow">ABOUT THE EVENT</span>

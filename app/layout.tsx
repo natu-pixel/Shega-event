@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Poppins } from "next/font/google";
 import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
+import { StructuredData } from "@/components/structured-data";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -49,7 +50,11 @@ export const viewport: Viewport = { themeColor: "#0A0A0A" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${montserrat.variable} ${poppins.variable}`}>
-      <body>{children}</body>
+      <body>
+        <a className="skip-link" href="#about">Skip to content</a>
+        {children}
+        <StructuredData />
+      </body>
     </html>
   );
 }

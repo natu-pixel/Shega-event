@@ -1,165 +1,280 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ScrollStory } from "@/components/scroll-story";
-import CoverflowGallery, { GalleryItem } from "@/components/CoverflowGallery";
+import { Brand } from "@/components/brand";
+import { type GalleryItem } from "@/components/CoverflowGallery";
+import Navbar from "@/components/Navbar";
+import { CONTACT_CHANNELS, INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_NAME } from "@/lib/site";
+
+// Photographs collected from the Shega Events Instagram account. Every card keeps
+// its credit and links back to the original post; see public/events/sources.json.
+const galleryItems: GalleryItem[] = [
+  {
+    id: "kemen-1",
+    title: "Bermel Fest - Live duet",
+    image: "/events/kemen-lejemer/01-live-duet.jpg",
+    href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
+    mediaType: "photo",
+    category: "bermel",
+    credit: "@bermel_fest",
+  },
+  {
+    id: "kemen-2",
+    title: "Bermel Fest - The entrance",
+    image: "/events/kemen-lejemer/02-user-selected-entrance.jpg",
+    href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/?img_index=4",
+    mediaType: "photo",
+    category: "bermel",
+    credit: "@bermel_fest",
+  },
+  {
+    id: "kemen-3",
+    title: "Bermel Fest - Solo performance",
+    image: "/events/kemen-lejemer/03-solo-performance.jpg",
+    href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/?img_index=6",
+    mediaType: "photo",
+    category: "bermel",
+    credit: "@bermel_fest",
+  },
+  {
+    id: "kemen-4",
+    title: "Bermel Fest - Three voices",
+    image: "/events/kemen-lejemer/04-group-performance.jpg",
+    href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/?img_index=9",
+    mediaType: "photo",
+    category: "bermel",
+    credit: "@bermel_fest",
+  },
+  {
+    id: "rophnan-1",
+    title: "Rophnan - Aerial stage and crowd",
+    image: "/events/rophnan-finale/01-aerial-stage-and-crowd.jpg",
+    href: "https://www.instagram.com/rophnan/p/DUGMfeZgpqV/",
+    mediaType: "photo",
+    category: "rophnan",
+    credit: "@rophnan",
+  },
+  {
+    id: "rophnan-2",
+    title: "Rophnan - Dancers on stage",
+    image: "/events/rophnan-finale/02-dancers-onstage.jpg",
+    href: "https://www.instagram.com/rophnan/p/DUGMfeZgpqV/?img_index=3",
+    mediaType: "photo",
+    category: "rophnan",
+    credit: "@rophnan",
+  },
+  {
+    id: "rophnan-3",
+    title: "Rophnan - On stage",
+    image: "/events/rophnan-finale/03-rophnan-onstage.jpg",
+    href: "https://www.instagram.com/rophnan/p/DUGMfeZgpqV/?img_index=7",
+    mediaType: "photo",
+    category: "rophnan",
+    credit: "@rophnan",
+  },
+  {
+    id: "rophnan-4",
+    title: "Rophnan - The crowd",
+    image: "/events/rophnan-finale/04-user-selected-crowd.jpg",
+    href: "https://www.instagram.com/rophnan/p/DUGMfeZgpqV/?img_index=17",
+    mediaType: "photo",
+    category: "rophnan",
+    credit: "@rophnan",
+  },
+  {
+    id: "ke-beraf-1",
+    title: "Ke Beraf - Live at Kana",
+    image: "/events/keberaf/01-concert.jpg",
+    href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@shega_events",
+  },
+  {
+    id: "ke-beraf-2",
+    title: "Ke Beraf - On the microphone",
+    image: "/events/keberaf/02-concert.jpg",
+    href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/?img_index=2",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@shega_events",
+  },
+  {
+    id: "ke-beraf-3",
+    title: "Ke Beraf - Toward the crowd",
+    image: "/events/keberaf/03-concert.jpg",
+    href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/?img_index=3",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@shega_events",
+  },
+  {
+    id: "ke-beraf-4",
+    title: "Ke Beraf - Phone lights",
+    image: "/events/keberaf/04-concert.jpg",
+    href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/?img_index=4",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@shega_events",
+  },
+  {
+    id: "wazema-1",
+    title: "Wazema - Arm raised",
+    image: "/events/wazema/01-live-performance.jpg",
+    href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@mastewal_eyayu_official",
+  },
+  {
+    id: "wazema-2",
+    title: "Wazema - Stage and smoke",
+    image: "/events/wazema/02-stage-smoke.jpg",
+    href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/?img_index=2",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@mastewal_eyayu_official",
+  },
+  {
+    id: "wazema-3",
+    title: "Wazema - Concert atmosphere",
+    image: "/events/wazema/03-concert-atmosphere.jpg",
+    href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/?img_index=3",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@mastewal_eyayu_official",
+  },
+  {
+    id: "wazema-4",
+    title: "Wazema - Guest vocalist",
+    image: "/events/wazema/04-live-show.jpg",
+    href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/?img_index=4",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@mastewal_eyayu_official",
+  },
+  {
+    id: "halo-1",
+    title: "Halo Hawassa - Beside the stage",
+    image: "/events/halo-hawassa/01-yohana-stage-crowd.jpg",
+    href: "https://www.instagram.com/yohanaoriginal/p/DU8R_MYDaEg/",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@yohanaoriginal",
+  },
+  {
+    id: "halo-2",
+    title: "Halo Hawassa - The audience",
+    image: "/events/halo-hawassa/02-hawassa-concert.jpg",
+    href: "https://www.instagram.com/yohanaoriginal/p/DU8R_MYDaEg/?img_index=2",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@yohanaoriginal",
+  },
+  {
+    id: "halo-3",
+    title: "Halo Hawassa - Wide view",
+    image: "/events/halo-hawassa/03-hawassa-stage-wide.jpg",
+    href: "https://www.instagram.com/yohanaoriginal/p/DU8R_MYDaEg/?img_index=3",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@yohanaoriginal",
+  },
+  {
+    id: "halo-4",
+    title: "Halo Hawassa - Purple lights",
+    image: "/events/halo-hawassa/04-hawassa-concert.jpg",
+    href: "https://www.instagram.com/yohanaoriginal/p/DU8R_MYDaEg/?img_index=4",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@yohanaoriginal",
+  },
+  {
+    id: "arbaminch-1",
+    title: "Great Arba Minch Run - On the course",
+    image: "/events/great-arbaminch-run/01-race-photo.jpg",
+    href: "https://www.instagram.com/greatethrun/p/DaKhF1nCL5f/",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@greatethrun",
+  },
+  {
+    id: "arbaminch-2",
+    title: "Great Arba Minch Run - Smiling runner",
+    image: "/events/great-arbaminch-run/02-race-photo.jpg",
+    href: "https://www.instagram.com/greatethrun/p/DaKhF1nCL5f/?img_index=2",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@greatethrun",
+  },
+  {
+    id: "arbaminch-3",
+    title: "Great Arba Minch Run - Photo frame",
+    image: "/events/great-arbaminch-run/03-race-photo.jpg",
+    href: "https://www.instagram.com/greatethrun/p/DaKhF1nCL5f/?img_index=3",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@greatethrun",
+  },
+  {
+    id: "arbaminch-4",
+    title: "Great Arba Minch Run - Two runners",
+    image: "/events/great-arbaminch-run/04-race-photo.jpg",
+    href: "https://www.instagram.com/greatethrun/p/DaKhF1nCL5f/?img_index=4",
+    mediaType: "photo",
+    category: "shega",
+    credit: "@greatethrun",
+  },
+];
+
+const stats: readonly { label: string; value: string }[] = [
+  { label: "HEADQUARTERS", value: "Addis Ababa" },
+  { label: "EVENTS PRODUCED", value: "15+" },
+  { label: "FLAGSHIP SERIES", value: "Bermel Fest" },
+  { label: "EVENT PHOTOGRAPHS", value: String(galleryItems.length) },
+];
+
+const featuredEvents = [
+  {
+    title: "BERMEL FEST",
+    detail: "Concert / Live experience",
+    image: galleryItems[0].image,
+    href: galleryItems[0].href,
+  },
+  {
+    title: "HALO HAWASSA",
+    detail: "Festival / Live experience",
+    image: galleryItems[16].image,
+    href: galleryItems[16].href,
+  },
+] as const;
+
+const archiveItems = [
+  galleryItems[1],
+  galleryItems[5],
+  galleryItems[9],
+  galleryItems[13],
+  galleryItems[17],
+  galleryItems[21],
+];
 
 export default function ShegaLandingPage() {
-  const [activeArchive, setActiveArchive] = useState<number>(2);
   const [activeTab, setActiveTab] = useState<"nightmakers" | "peoples">("nightmakers");
-
-  const eventShowcases = [
-    {
-      id: 1,
-      title: "KEMN LEJEMER",
-      category: "CONCERT / NIGHTLIFE",
-      year: "2026",
-      mediaNote: "event video or photo",
-    },
-    {
-      id: 2,
-      title: "HELLO HAWASSA",
-      category: "FESTIVAL EXPERIENCE",
-      year: "2026",
-      mediaNote: "event video or photo",
-    },
-  ];
-
-  const visualArchives = [
-    { id: 0, label: "BACKSTAGE ENERGY & SOUNDCHECK" },
-    { id: 1, label: "CROWD MOMENTS IN MOTION" },
-    { id: 2, label: "Photos moving with captions on the hover" },
-    { id: 3, label: "LIGHTING & STAGE DESIGN" },
-    { id: 4, label: "AFTERHOURS SESSIONS" },
-    { id: 5, label: "FINALE & ENCORE" },
-  ];
-
-  const galleryItems: GalleryItem[] = [
-    {
-      id: 1,
-      title: "Kemn Ljemr - Concert reel",
-      image: "/events/kemen-lejemer/02-user-selected-entrance.jpg",
-      href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
-      mediaType: "video",
-      category: "kemen",
-      count: 1,
-    },
-    {
-      id: 2,
-      title: "Hello Hawassa",
-      image: "/events/halo-hawassa/01-yohana-stage-crowd.jpg",
-      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
-      mediaType: "video",
-      category: "hawassa",
-      count: 1,
-    },
-    {
-      id: 3,
-      title: "Kemn Ljemr - Live album",
-      image: "/events/kemen-lejemer/01-live-duet.jpg",
-      href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
-      mediaType: "photo",
-      category: "kemen",
-      count: 1,
-    },
-    {
-      id: 4,
-      title: "Hello Hawassa - Yohanna live",
-      image: "/events/yohanna-halo-hawassa.jpg",
-      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
-      mediaType: "photo",
-      category: "hawassa",
-      count: 1,
-    },
-    {
-      id: 5,
-      title: "Bermel Fest - Pyro and lights",
-      image: "/events/rophnan-finale/01-aerial-stage-and-crowd.jpg",
-      href: "https://www.instagram.com/rophnan/p/DUGMfeZgpqV/",
-      mediaType: "video",
-      category: "bermel",
-      count: 1,
-    },
-    {
-      id: 6,
-      title: "Bermel Fest - Crowd energy",
-      image: "/events/rophnan-finale/04-user-selected-crowd.jpg",
-      href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/",
-      mediaType: "photo",
-      category: "bermel",
-      count: 1,
-    },
-    {
-      id: 7,
-      title: "Hello Hawassa - Main stage",
-      image: "/events/halo-hawassa/02-hawassa-concert.jpg",
-      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
-      mediaType: "video",
-      category: "hawassa",
-      count: 1,
-    },
-    {
-      id: 8,
-      title: "Bermel Fest - Night celebration",
-      image: "/events/keberaf/01-concert.jpg",
-      href: "https://www.instagram.com/shega_events/p/DaDU5qnjAjM/",
-      mediaType: "photo",
-      category: "bermel",
-      count: 1,
-    },
-    {
-      id: 9,
-      title: "Kemn Ljemr - Solo entrance",
-      image: "/events/kemen-lejemer/03-solo-performance.jpg",
-      href: "https://www.instagram.com/bermel_fest/p/DZIF0nbDdTP/",
-      mediaType: "photo",
-      category: "kemen",
-      count: 1,
-    },
-    {
-      id: 10,
-      title: "Hello Hawassa - Festival view",
-      image: "/events/halo-hawassa/03-hawassa-stage-wide.jpg",
-      href: "https://www.instagram.com/yohanaoriginal/p/DU6cP2yCkBV/",
-      mediaType: "photo",
-      category: "hawassa",
-      count: 1,
-    },
-    {
-      id: 11,
-      title: "Bermel Fest - Sound setup",
-      image: "/events/wazema/01-live-performance.jpg",
-      href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/",
-      mediaType: "video",
-      category: "bermel",
-      count: 1,
-    },
-    {
-      id: 12,
-      title: "Bermel Fest - Finale smoke & stage",
-      image: "/events/wazema/02-stage-smoke.jpg",
-      href: "https://www.instagram.com/mastewal_eyayu_official/p/DdcDTHmgO0V/",
-      mediaType: "photo",
-      category: "bermel",
-      count: 1,
-    },
-  ];
 
   return (
     <main className="shega-page">
-      {/* =====================================================================
-          1. HERO SECTION SLOT (Place your existing Hero component here)
-      ===================================================================== */}
-      <section id="hero-placeholder" className="shega-hero-slot">
+      <Navbar />
+      {/* 1. Hero — the scroll-driven Shega Website Video sequence. */}
+      <section id="experience" className="shega-hero-slot" aria-label="Shega Events">
         <ScrollStory />
       </section>
 
-      {/* =====================================================================
-          2. ABOUT / INTRO SECTION (WHITE BG)
-      ===================================================================== */}
-      <section className="shega-about-section">
+      {/* 2. About */}
+      <section id="about" className="shega-about-section">
         <div className="shega-container shega-about-grid">
-          <div className="shega-about-left">
+          <div>
             <h2 className="shega-about-headline">
               AN INDEPENDENT EVENT COMPANY CREATING EXPERIENCES THAT BRING PEOPLE
               TOGETHER, FROM THE FIRST IDEA TO THE FINAL MOMENT.
@@ -168,158 +283,82 @@ export default function ShegaLandingPage() {
 
           <div className="shega-about-right">
             <p className="shega-about-bio">
-              Shega Events is an independent event production company founded in
-              2023. We design, produce, and manage live experiences &mdash; from
-              intimate cultural gatherings to large-scale music nights &mdash; built on
-              unforgettable atmosphere.
+              Shega Events produces live experiences in Addis Ababa &mdash; concerts,
+              festivals and brand activations &mdash; from the first idea to the final
+              moment. See the original posts behind every photograph we show, and the
+              full archive on Instagram.
             </p>
 
             <div className="shega-stats-list">
-              <div className="shega-stat-row">
-                <span className="shega-stat-label">FOUNDED</span>
-                <span className="shega-stat-value">2023</span>
-              </div>
-              <div className="shega-stat-row">
-                <span className="shega-stat-label">HEADQUARTERS</span>
-                <span className="shega-stat-value">Addis Ababa</span>
-              </div>
-              <div className="shega-stat-row">
-                <span className="shega-stat-label">FLAGSHIP SERIES</span>
-                <span className="shega-stat-value">Kemn Lejemer</span>
-              </div>
-              <div className="shega-stat-row">
-                <span className="shega-stat-label">EVENTS PRODUCED</span>
-                <span className="shega-stat-value">15+</span>
-              </div>
-            </div>
-
-            <div>
-              <button type="button" className="shega-pill-outline-btn">
-                <span className="shega-orange-dot" />
-                LEARN MORE
-              </button>
+              {stats.map((stat) => (
+                <div key={stat.label} className="shega-stat-row">
+                  <span className="shega-stat-label">{stat.label}</span>
+                  <span className="shega-stat-value">{stat.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* =====================================================================
-          3. SCROLLING GALLERY (Coverflow — 9+ linked moments)
-      ===================================================================== */}
-      <section className="shega-scrolling-gallery-section">
-        <CoverflowGallery
-          items={galleryItems}
-          heading="All events"
-          tagline="A different angle. A new memory."
-        />
-      </section>
-
-      {/* =====================================================================
-          4. FEATURED EVENTS SHOWCASE (BLACK FRAME + WHITE CARDS)
-      ===================================================================== */}
-      <section className="shega-events-section">
-        {eventShowcases.map((event) => (
-          <article key={event.id} className="shega-event-card">
-            <div className="shega-event-top-bar" />
-
-            <div className="shega-event-media-placeholder">
-              <span>{event.mediaNote}</span>
+      {/* 3. Featured events */}
+      <section id="events" className="shega-events-section" aria-label="Featured events">
+        {featuredEvents.map((event) => (
+          <article key={event.title} className="shega-event-card">
+            <div className="shega-event-card-bar" />
+            <div className="shega-event-image-wrap">
+              <img src={event.image} alt={event.title} loading="lazy" />
             </div>
-
-            <div className="shega-event-footer">
-              <h3 className="shega-event-title">{event.title}</h3>
-              <p className="shega-event-category">{event.category}</p>
-              <p className="shega-event-year">{event.year}</p>
-              <button type="button" className="shega-event-btn">
-                EXPLORE EVENT
-              </button>
+            <div className="shega-event-card-copy">
+              <h2>{event.title}</h2>
+              <p>{event.detail}</p>
+              <a href={event.href} target="_blank" rel="noopener noreferrer">
+                View the moment <span aria-hidden="true">↗</span>
+              </a>
             </div>
           </article>
         ))}
       </section>
 
-      {/* =====================================================================
-          4. THROUGH OUR EYES (VISUAL ARCHIVES ACCORDION GALLERY)
-      ===================================================================== */}
-      <section className="shega-archives-section">
-        <div className="shega-container shega-archives-header">
-          <div className="shega-archives-title-col">
-            <h2 className="shega-section-title-lg">
-              THROUGH OUR
-              <br />
-              EYES.
-            </h2>
-          </div>
-          <div className="shega-archives-sub-col">
-            <p className="shega-eyebrow-dark">VISUAL ARCHIVES</p>
-            <p className="shega-archives-desc">
-              The lights, the crowd, the chaos, the moments between the moments.
-            </p>
+      {/* 4. Visual archive */}
+      <section id="gallery" className="shega-archive-section" aria-label="Visual archive">
+        <div className="shega-container shega-archive-heading">
+          <h2>THROUGH OUR<br />EYES.</h2>
+          <div>
+            <p className="shega-archive-label">VISUAL ARCHIVES</p>
+            <p>The lights, the noise. The faces. The moments between the moments.</p>
           </div>
         </div>
-
-        <div className="shega-archives-strip-row">
-          {visualArchives.map((item, idx) => {
-            const isExpanded = activeArchive === idx;
-            return (
-              <div
-                key={item.id}
-                onMouseEnter={() => setActiveArchive(idx)}
-                onClick={() => setActiveArchive(idx)}
-                className={`shega-archive-panel ${isExpanded ? "is-expanded" : ""}`}
-              >
-                <div className="shega-archive-caption">
-                  <p>{item.label}</p>
-                </div>
-              </div>
-            );
-          })}
+        <div className="shega-archive-viewport">
+          <div className="shega-archive-track">
+            {[...archiveItems, ...archiveItems].map((item, index) => (
+              <a key={`${item.id}-${index}`} href={item.href} target="_blank" rel="noopener noreferrer" className="shega-archive-tile" aria-hidden={index >= archiveItems.length} tabIndex={index >= archiveItems.length ? -1 : undefined}>
+                <img src={item.image} alt={item.title} loading="lazy" />
+                <span>{item.title}</span>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* =====================================================================
-          5. DARK SECTION: MEET THE NIGHTMAKERS + LET'S MAKE IT AN EVENT
-      ===================================================================== */}
-      <section className="shega-dark-section">
+      {/* 5. Contact */}
+      <section id="contact" className="shega-dark-section">
         <div className="shega-container">
-          {/* Switcher Header */}
           <div className="shega-switcher-header">
-            <button
-              type="button"
-              onClick={() => setActiveTab("nightmakers")}
-              className={`shega-tab-btn ${activeTab === "nightmakers" ? "is-active" : ""}`}
-            >
-              <h2 className="shega-section-title-lg">
-                MEET THE
-                <br />
-                NIGHTMAKERS.
-              </h2>
+            <button type="button" onClick={() => setActiveTab("nightmakers")} className={`shega-tab-btn ${activeTab === "nightmakers" ? "is-active" : ""}`}>
+              <h2 className="shega-section-title-lg">MEET THE<br />NIGHTMAKERS.</h2>
             </button>
-
             <span className="shega-switcher-or">OR</span>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("peoples")}
-              className={`shega-tab-btn ${activeTab === "peoples" ? "is-active" : ""}`}
-            >
-              <h2 className="shega-section-title-lg">
-                WHAT
-                <br />
-                PEOPLES SAY.
-              </h2>
+            <button type="button" onClick={() => setActiveTab("peoples")} className={`shega-tab-btn ${activeTab === "peoples" ? "is-active" : ""}`}>
+              <h2 className="shega-section-title-lg">WHAT<br />PEOPLE SAY.</h2>
             </button>
           </div>
 
-          {/* Vertical Divider Space */}
           <div className="shega-divider-stage">
             <div className="shega-vertical-line" />
-            <div className="shega-divider-content" />
           </div>
 
-          {/* Bottom Contact Grid */}
           <div className="shega-contact-grid">
-            {/* Left Column */}
             <div className="shega-contact-left">
               <div>
                 <div className="shega-eyebrow-light">
@@ -327,45 +366,23 @@ export default function ShegaLandingPage() {
                   <span>START A PROJECT</span>
                 </div>
 
-                <h2 className="shega-contact-title">
-                  LET&apos;S MAKE
-                  <br />
-                  IT AN EVENT.
-                </h2>
+                <h2 className="shega-contact-title">{activeTab === "nightmakers" ? <>LET&apos;S MAKE<br />IT AN EVENT.</> : <>LET&apos;S MAKE<br />IT MEMORABLE.</>}</h2>
 
                 <p className="shega-contact-subtext">
-                  From concept to final encore &mdash; let&apos;s build something people
-                  talk about long after the lights come up.
+                  From concept to final encore &mdash; tell us what you have in mind and
+                  we&apos;ll build something people talk about long after the lights come up.
                 </p>
               </div>
 
               <div className="shega-contact-info-list">
-                <div className="shega-contact-info-row">
-                  <span className="shega-contact-label">GENERAL INQUIRIES</span>
-                  <a
-                    href="mailto:info@shega.events"
-                    className="shega-contact-link"
-                  >
-                    info@shega.events
-                  </a>
-                </div>
-
-                <div className="shega-contact-info-row">
-                  <span className="shega-contact-label">PARTNERSHIPS</span>
-                  <a
-                    href="mailto:partnerships@shega.events"
-                    className="shega-contact-link"
-                  >
-                    partnerships@shega.events
-                  </a>
-                </div>
-
-                <div className="shega-contact-info-row">
-                  <span className="shega-contact-label">DIRECT PHONE</span>
-                  <a href="tel:+251911000000" className="shega-contact-link">
-                    +251 911 00 00 00
-                  </a>
-                </div>
+                {CONTACT_CHANNELS.map((channel) => (
+                  <div key={channel.label} className="shega-contact-info-row">
+                    <span className="shega-contact-label">{channel.label}</span>
+                    <a href={channel.href} target="_blank" rel="noopener noreferrer" className="shega-contact-link">
+                      {channel.value}
+                    </a>
+                  </div>
+                ))}
 
                 <p className="shega-contact-footnote">
                   BASED IN ADDIS ABABA &middot; PRODUCING ACROSS ETHIOPIA &amp; BEYOND
@@ -373,99 +390,38 @@ export default function ShegaLandingPage() {
               </div>
             </div>
 
-            {/* Right Column: Form Card */}
-            <div className="shega-contact-right">
-              <div className="shega-form-card">
-                <h3 className="shega-form-heading">TELL US ABOUT YOUR EVENT</h3>
-
-                <form onSubmit={(e) => e.preventDefault()} className="shega-form">
-                  <div className="shega-field">
-                    <label className="shega-label">YOUR NAME *</label>
-                    <input
-                      type="text"
-                      placeholder="Full name or organization"
-                      className="shega-input"
-                    />
-                  </div>
-
-                  <div className="shega-field">
-                    <label className="shega-label">EMAIL ADDRESS *</label>
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      className="shega-input"
-                    />
-                  </div>
-
-                  <div className="shega-field">
-                    <label className="shega-label">EVENT TYPE</label>
-                    <input
-                      type="text"
-                      placeholder="Concert, brand activation, festival, private..."
-                      className="shega-input"
-                    />
-                  </div>
-
-                  <div className="shega-field">
-                    <label className="shega-label">ESTIMATED GUESTS &amp; DATE</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 500 guests • November 2026"
-                      className="shega-input"
-                    />
-                  </div>
-
-                  <div className="shega-field">
-                    <label className="shega-label">PROJECT DETAILS</label>
-                    <input
-                      type="text"
-                      placeholder="Share your vision, venue ideas, or goals..."
-                      className="shega-input"
-                    />
-                  </div>
-
-                  <div className="shega-form-actions">
-                    <button type="submit" className="shega-submit-pill">
-                      SEND INQUIRY
-                    </button>
-                    <button
-                      type="submit"
-                      aria-label="Submit inquiry"
-                      className="shega-submit-arrow"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        width="14"
-                        height="14"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </form>
+            <div className="shega-form-card">
+              <h3 className="shega-form-heading">TELL US ABOUT YOUR EVENT</h3>
+              <p className="shega-contact-subtext">
+                Send us a message on Instagram with your event type, rough date and the
+                size of crowd you have in mind. We reply to every brief.
+              </p>
+              <div className="shega-form-actions">
+                <a
+                  className="shega-submit-pill"
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Message {INSTAGRAM_HANDLE}
+                </a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* =====================================================================
-          6. ORANGE FOOTER SECTION
-      ===================================================================== */}
+      {/* 6. Footer */}
       <footer className="shega-footer">
         <div className="shega-container shega-footer-inner">
-          <div className="shega-footer-col">Logo</div>
+          <Brand footer />
           <div className="shega-footer-center">
-            <a href="#privacy">Privacy policy....</a>
-            <span>&amp; other footers</span>
+            <p>{SITE_NAME} &middot; Addis Ababa, Ethiopia</p>
+            <p className="shega-footer-year">&copy; {new Date().getFullYear()}</p>
           </div>
-          <div className="shega-footer-col">Socials</div>
+          <Link className="shega-footer-social" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            {INSTAGRAM_HANDLE} <span aria-hidden="true">&#8599;</span>
+          </Link>
         </div>
       </footer>
     </main>
