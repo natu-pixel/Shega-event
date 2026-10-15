@@ -24,6 +24,12 @@ export type Chapter = {
 const OLD_SEQUENCE_START = 32;
 const OLD_SEQUENCE_END = 1000;
 const OLD_SEQUENCE_COUNT = OLD_SEQUENCE_END - OLD_SEQUENCE_START + 1;
+// These source frames were absent from the supplied sequence. Hold the last
+// available image across each gap so the browser never requests a missing file.
+const MISSING_OLD_FRAME_RANGES: readonly (readonly [number, number])[] = [
+  [952, 966],
+  [987, 999],
+];
 const NEW_SEQUENCE_COUNT = 734;
 const TOTAL_FRAMES = OLD_SEQUENCE_COUNT + NEW_SEQUENCE_COUNT;
 const FRAMES_DIRECTORY = "/frames/PNG%20Sequence";
@@ -54,7 +60,12 @@ export const CHAPTERS: readonly Chapter[] = [
 export function frameUrl(chapter: Chapter, index: number): string {
   const i = Math.min(Math.max(Math.round(index), 0), chapter.frames - 1);
   if (i < OLD_SEQUENCE_COUNT) {
-    const frame = String(OLD_SEQUENCE_START + i).padStart(4, "0");
+    const sourceFrame = OLD_SEQUENCE_START + i;
+    const missingRange = MISSING_OLD_FRAME_RANGES.find(
+      ([start, end]) => sourceFrame >= start && sourceFrame <= end,
+    );
+    const availableFrame = missingRange ? missingRange[0] - 1 : sourceFrame;
+    const frame = String(availableFrame).padStart(4, "0");
     return `${FRAMES_DIRECTORY}/frame_${frame}.webp${revisionQuery(chapter)}`;
   }
   const frame = String(i - OLD_SEQUENCE_COUNT + 1000).padStart(5, "0");
