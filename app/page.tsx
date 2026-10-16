@@ -393,19 +393,42 @@ export default function ShegaLandingPage() {
             <div className="shega-form-card">
               <h3 className="shega-form-heading">TELL US ABOUT YOUR EVENT</h3>
               <p className="shega-contact-subtext">
-                Send us a message on Instagram with your event type, rough date and the
-                size of crowd you have in mind. We reply to every brief.
+                Give us the first details. Your email app will open with a ready-to-send brief.
               </p>
-              <div className="shega-form-actions">
-                <a
-                  className="shega-submit-pill"
-                  href={INSTAGRAM_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Message {INSTAGRAM_HANDLE}
-                </a>
-              </div>
+              <form
+                className="shega-inquiry-form"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const values = new FormData(event.currentTarget);
+                  const subject = `Event inquiry: ${values.get("eventType")}`;
+                  const body = [
+                    `Name: ${values.get("name")}`,
+                    `Email: ${values.get("email")}`,
+                    `Event type: ${values.get("eventType")}`,
+                    `Date: ${values.get("date") || "Not set"}`,
+                    `Estimated guests: ${values.get("guests") || "Not sure yet"}`,
+                    "",
+                    String(values.get("brief") || ""),
+                  ].join("\\n");
+                  window.location.href = `mailto:info@shega.events?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                }}
+              >
+                <div className="shega-form-fields">
+                  <label>Name<input name="name" autoComplete="name" placeholder="Your name" required /></label>
+                  <label>Email<input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
+                  <label>Event type<select name="eventType" defaultValue="" required>
+                    <option value="" disabled>Select an event</option>
+                    <option>Concert</option><option>Festival</option><option>Brand activation</option><option>Private event</option><option>Other</option>
+                  </select></label>
+                  <label>Target date<input name="date" type="date" /></label>
+                  <label className="shega-form-wide">Estimated guests<input name="guests" type="number" min="1" placeholder="e.g. 500" /></label>
+                  <label className="shega-form-wide">Tell us a little more<textarea name="brief" rows={3} placeholder="Location, goals, or anything you have in mind" required /></label>
+                </div>
+                <div className="shega-form-actions">
+                  <button className="shega-submit-pill" type="submit">Prepare event brief <span aria-hidden="true">↗</span></button>
+                  <span className="shega-form-note">Opens your email app to send to info@shega.events</span>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -413,15 +436,33 @@ export default function ShegaLandingPage() {
 
       {/* 6. Footer */}
       <footer className="shega-footer">
-        <div className="shega-container shega-footer-inner">
-          <Brand footer />
-          <div className="shega-footer-center">
-            <p>{SITE_NAME} &middot; Addis Ababa, Ethiopia</p>
-            <p className="shega-footer-year">&copy; {new Date().getFullYear()}</p>
+        <div className="shega-footer-marquee" aria-hidden="true">
+          <div className="shega-footer-marquee-track">
+            {[0, 1].map((copy) => <span key={copy}>MAKE IT A MOMENT <i>✳</i> SHEGA EVENTS <i>✳</i> ADDIS ABABA <i>✳</i>&nbsp;</span>)}
           </div>
-          <Link className="shega-footer-social" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
-            {INSTAGRAM_HANDLE} <span aria-hidden="true">&#8599;</span>
-          </Link>
+        </div>
+        <div className="shega-footer-rule" aria-hidden="true"><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /></div>
+        <div className="shega-container shega-footer-inner">
+          <div className="shega-footer-brand">
+            <Brand footer />
+            <p className="shega-footer-tagline">{SITE_NAME} &middot; Addis Ababa, Ethiopia</p>
+          </div>
+          <nav className="shega-footer-links">
+            <a href="/privacy" className="shega-footer-link">Privacy Policy</a>
+            <a href="/cookies" className="shega-footer-link">Cookies</a>
+            <a href="/terms" className="shega-footer-link">Terms of Service</a>
+            <a href="#contact" className="shega-footer-link">Contact</a>
+          </nav>
+          <div className="shega-footer-socials">
+            <a href="mailto:info@shega.events" className="shega-footer-social" target="_blank" rel="noopener noreferrer">
+              info@shega.events <span aria-hidden="true">&#8599;</span>
+            </a>
+            <Link href={INSTAGRAM_URL} className="shega-footer-social" target="_blank" rel="noopener noreferrer">
+              {INSTAGRAM_HANDLE} <span aria-hidden="true">&#8599;</span>
+            </Link>
+          </div>
+          <p className="shega-footer-year">&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
+          <p className="shega-footer-build">Built by <a href="https://daat.tech" target="_blank" rel="noopener noreferrer" className="shega-footer-build-link">daat.tech</a></p>
         </div>
       </footer>
     </main>
