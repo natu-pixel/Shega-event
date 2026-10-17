@@ -1,3 +1,5 @@
+import { OLD_SEQUENCE_FRAMES, NEW_SEQUENCE_FRAMES, THIRD_SEQUENCE_FRAMES } from "./frames-manifest.ts";
+
 export type EventInfo = {
   title: string;
   description: string;
@@ -18,19 +20,10 @@ export type Chapter = {
   details: EventInfo;
 };
 
-// The supplied hero sequence has gaps in its first part. List only the frames
-// present on disk so playback skips missing filenames and shows every image.
-const FIRST_SEQUENCE_RANGES: readonly (readonly [number, number])[] = [
-  [32, 951],
-  [967, 986],
-  [1000, 1000],
-];
-const FIRST_SEQUENCE_COUNT = FIRST_SEQUENCE_RANGES.reduce(
-  (count, [start, end]) => count + end - start + 1,
-  0,
-);
-const NEW_SEQUENCE_COUNT = 734;
-const TOTAL_FRAMES = FIRST_SEQUENCE_COUNT + NEW_SEQUENCE_COUNT;
+const FIRST_SEQUENCE_COUNT = THIRD_SEQUENCE_FRAMES.length;
+const NEW_SEQUENCE_COUNT = NEW_SEQUENCE_FRAMES.length;
+const OLD_SEQUENCE_COUNT = OLD_SEQUENCE_FRAMES.length;
+const TOTAL_FRAMES = FIRST_SEQUENCE_COUNT + NEW_SEQUENCE_COUNT + OLD_SEQUENCE_COUNT;
 const FRAMES_DIRECTORY = "/frames/PNG%20Sequence";
 
 export const CHAPTERS: readonly Chapter[] = [
@@ -59,26 +52,24 @@ export const CHAPTERS: readonly Chapter[] = [
 export function frameUrl(chapter: Chapter, index: number): string {
   const i = Math.min(Math.max(Math.round(index), 0), chapter.frames - 1);
   if (i < FIRST_SEQUENCE_COUNT) {
-    const sourceFrame = firstSequenceFrame(i);
-    const frame = String(sourceFrame).padStart(4, "0");
-    return `${FRAMES_DIRECTORY}/frame_${frame}.webp${revisionQuery(chapter)}`;
+    const frameNum = THIRD_SEQUENCE_FRAMES[i];
+    const frame = String(frameNum).padStart(4, "0");
+    return `${FRAMES_DIRECTORY}/${frame}.webp${revisionQuery(chapter)}`;
   }
-  const frame = String(i - FIRST_SEQUENCE_COUNT + 1000).padStart(5, "0");
-  return `${FRAMES_DIRECTORY}/Shega%20Website%20Video%20${frame}.webp${revisionQuery(chapter)}`;
-}
-
-function firstSequenceFrame(index: number): number {
-  let offset = index;
-  for (const [start, end] of FIRST_SEQUENCE_RANGES) {
-    const rangeLength = end - start + 1;
-    if (offset < rangeLength) return start + offset;
-    offset -= rangeLength;
+  const newOffset = i - FIRST_SEQUENCE_COUNT;
+  if (newOffset < NEW_SEQUENCE_COUNT) {
+    const frameNum = NEW_SEQUENCE_FRAMES[newOffset];
+    const frame = String(frameNum).padStart(5, "0");
+    return `${FRAMES_DIRECTORY}/Shega%20Website%20Video%20${frame}.webp${revisionQuery(chapter)}`;
   }
-  throw new RangeError(`Hero frame index ${index} is outside the first sequence`);
+  const frameNum = OLD_SEQUENCE_FRAMES[newOffset - NEW_SEQUENCE_COUNT];
+  const frame = String(frameNum).padStart(4, "0");
+  return `${FRAMES_DIRECTORY}/frame_${frame}.webp${revisionQuery(chapter)}`;
 }
 
 export function posterUrl(chapter: Chapter): string {
-  return `${FRAMES_DIRECTORY}/frame_0032.webp${revisionQuery(chapter)}`;
+  const frame = String(THIRD_SEQUENCE_FRAMES[0]).padStart(4, "0");
+  return `${FRAMES_DIRECTORY}/${frame}.webp${revisionQuery(chapter)}`;
 }
 
 export const TOTAL_HERO_FRAMES = TOTAL_FRAMES;

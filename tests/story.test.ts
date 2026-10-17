@@ -15,22 +15,22 @@ test("the hero is one chapter with documented, dateless copy", () => {
   assert.ok(!/\b202[0-9]\b/.test(chapter.details.description), "Do not assign unverified dates to local films");
 });
 
-test("frame URLs play every supplied image across the two PNG-sequence parts", () => {
+test("frame URLs play every supplied image across the three PNG-sequence parts", () => {
   const [chapter] = CHAPTERS;
-  // Part 1 skips missing filenames while keeping every available image.
-  assert.equal(frameUrl(chapter, 0), "/frames/PNG%20Sequence/frame_0032.webp");
-  assert.equal(frameUrl(chapter, 1), "/frames/PNG%20Sequence/frame_0033.webp");
-  assert.equal(frameUrl(chapter, 919), "/frames/PNG%20Sequence/frame_0951.webp");
-  assert.equal(frameUrl(chapter, 920), "/frames/PNG%20Sequence/frame_0967.webp");
-  assert.equal(frameUrl(chapter, 939), "/frames/PNG%20Sequence/frame_0986.webp");
-  assert.equal(frameUrl(chapter, 940), "/frames/PNG%20Sequence/frame_1000.webp");
+  // Part 1: "0001..0500" plain four-digit names.
+  assert.equal(frameUrl(chapter, 0), "/frames/PNG%20Sequence/0001.webp");
+  assert.equal(frameUrl(chapter, 1), "/frames/PNG%20Sequence/0002.webp");
+  assert.equal(frameUrl(chapter, 499), "/frames/PNG%20Sequence/0500.webp");
   // Part 2: "Shega Website Video 01000..01733", served as five-digit names.
-  assert.equal(frameUrl(chapter, 941), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001000.webp");
-  assert.equal(frameUrl(chapter, chapter.frames - 1), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001733.webp");
+  assert.equal(frameUrl(chapter, 500), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001000.webp");
+  assert.equal(frameUrl(chapter, 1233), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001733.webp");
+  // Part 3: frame_NNNN.webp files (skips missing filenames while keeping every available image).
+  assert.equal(frameUrl(chapter, 1234), "/frames/PNG%20Sequence/frame_0032.webp");
+  assert.equal(frameUrl(chapter, chapter.frames - 1), "/frames/PNG%20Sequence/frame_1000.webp");
   // Out-of-range indices clamp to the part boundaries rather than escaping the folder.
-  assert.equal(frameUrl(chapter, -5), "/frames/PNG%20Sequence/frame_0032.webp");
-  assert.equal(frameUrl(chapter, 5000), "/frames/PNG%20Sequence/Shega%20Website%20Video%2001733.webp");
-  assert.equal(chapter.frames, 1675);
+  assert.equal(frameUrl(chapter, -5), "/frames/PNG%20Sequence/0001.webp");
+  assert.equal(frameUrl(chapter, 5000), "/frames/PNG%20Sequence/frame_1000.webp");
+  assert.equal(chapter.frames, 1885);
 });
 
 test("every first, last and sampled hero frame has a served WebP copy", () => {
@@ -41,7 +41,7 @@ test("every first, last and sampled hero frame has a served WebP copy", () => {
     const file = decodeURIComponent(frameUrl(chapter, index).split("/").pop() ?? "");
     assert.ok(existsSync(new URL(file, FRAMES)), `Missing served frame: ${file}`);
   }
-  assert.equal(posterUrl(chapter), "/frames/PNG%20Sequence/frame_0032.webp");
+  assert.equal(posterUrl(chapter), "/frames/PNG%20Sequence/0001.webp");
   const poster = decodeURIComponent(posterUrl(chapter).split("/").pop() ?? "");
   assert.ok(existsSync(new URL(poster, FRAMES)), `Missing poster frame: ${poster}`);
 });
@@ -49,8 +49,8 @@ test("every first, last and sampled hero frame has a served WebP copy", () => {
 test("a chapter revision invalidates both frame and poster URLs", () => {
   const [chapter] = CHAPTERS;
   const revised = { ...chapter, assetRevision: "abc123" };
-  assert.equal(frameUrl(revised, 0), "/frames/PNG%20Sequence/frame_0032.webp?v=abc123");
-  assert.equal(posterUrl(revised), "/frames/PNG%20Sequence/frame_0032.webp?v=abc123");
+  assert.equal(frameUrl(revised, 0), "/frames/PNG%20Sequence/0001.webp?v=abc123");
+  assert.equal(posterUrl(revised), "/frames/PNG%20Sequence/0001.webp?v=abc123");
   assert.equal(frameUrl(chapter, 0).includes("?"), false);
 });
 
