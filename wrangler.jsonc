@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "shega",
+  "name": "shega-event",
   "compatibility_date": "2026-10-13",
   "compatibility_flags": ["nodejs_compat"],
   "main": ".open-next/worker.js",
@@ -11,11 +11,5 @@
   "observability": {
     "enabled": true
   },
-  "account_id": "650ca8cde8dff7e84cacaaeb07464446",
-  "r2_buckets": [
-    {
-      "bucket_name": "shega-frames",
-      "binding": "shega_frames"
-    }
-  ]
+  "account_id": "650ca8cde8dff7e84cacaaeb07464446"
 }

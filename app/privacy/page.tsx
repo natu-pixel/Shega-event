@@ -68,11 +68,10 @@ export default function PrivacyPage() {
                 data protection authority.
               </p>
               <p>
-                The project is configured for deployment on Cloudflare Workers. Its configuration
-                includes an R2 bucket binding for frame assets, but the application code does not
-                currently read from that bucket. We have not verified the live hosting, security,
-                or email providers’ data handling terms or physical data locations. Do not send
-                sensitive personal information through the inquiry form.
+                The project is configured for deployment on Cloudflare Workers. We have not
+                verified the live hosting, security, or email providers’ data handling terms or
+                physical data locations. Do not send sensitive personal information through the
+                inquiry form.
               </p>
             </section>
             <section id="contact-us" className="shega-legal-block">
