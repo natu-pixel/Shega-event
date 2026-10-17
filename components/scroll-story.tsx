@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { FrameCache } from "@/lib/frame-cache";
 import { CHAPTERS, posterUrl, type Chapter } from "@/lib/story";
@@ -248,7 +247,14 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
     >
       <div className="story-stage" ref={stageRef}>
         <div className="story-poster">
-          <Image src={posterUrl(chapter)} alt="" fill loading="eager" fetchPriority="high" sizes="100vw" style={{ objectPosition: `${chapter.focalX * 100}% 50%` }} />
+          <img
+            src={posterUrl(chapter)}
+            alt=""
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            style={{ objectPosition: `${chapter.focalX * 100}% 50%` }}
+          />
         </div>
         <canvas className="story-canvas" ref={canvasRef} aria-hidden="true" />
         <div className="film-shade" aria-hidden="true" />
@@ -282,17 +288,22 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
         </div>
         <div className="story-footer">
           <div className="chapter-caption">
-            <span className="eyebrow">{String(active + 1).padStart(2, "0")} / {chapter.eyebrow}</span>
+            <span className="eyebrow">
+              {chapters.length > 1 ? `${String(active + 1).padStart(2, "0")} / ` : ""}
+              {chapter.eyebrow}
+            </span>
             <p>{chapter.name} <span>In the moment.</span></p>
           </div>
           <div className="scroll-cue" aria-hidden="true"><span className="scroll-line" />SCROLL TO FLY</div>
-          <nav className="chapter-nav" aria-label="Event chapters">
-            {chapters.map((item, index) => (
-              <button key={item.id} type="button" onClick={() => goToChapter(index)} aria-label={`Go to ${item.name}`} aria-current={index === active ? "step" : undefined}>
-                <span>{String(index + 1).padStart(2, "0")}</span><i />
-              </button>
-            ))}
-          </nav>
+          {chapters.length > 1 && (
+            <nav className="chapter-nav" aria-label="Event chapters">
+              {chapters.map((item, index) => (
+                <button key={item.id} type="button" onClick={() => goToChapter(index)} aria-label={`Go to ${item.name}`} aria-current={index === active ? "step" : undefined}>
+                  <span>{String(index + 1).padStart(2, "0")}</span><i />
+                </button>
+              ))}
+            </nav>
+          )}
         </div>
         {!ready && !reducedMotion && !error && <span className="frame-status" role="status">Preparing the scene<span aria-hidden="true">...</span></span>}
         {error && <div className="frame-error" role="status">{error}<button type="button" onClick={() => cacheRef.current?.retryFailures()}>Retry frames</button></div>}

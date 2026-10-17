@@ -21,9 +21,9 @@ export type Chapter = {
 };
 
 const FIRST_SEQUENCE_COUNT = THIRD_SEQUENCE_FRAMES.length;
-const NEW_SEQUENCE_COUNT = NEW_SEQUENCE_FRAMES.length;
+const SECOND_SEQUENCE_COUNT = NEW_SEQUENCE_FRAMES.length;
 const OLD_SEQUENCE_COUNT = OLD_SEQUENCE_FRAMES.length;
-const TOTAL_FRAMES = FIRST_SEQUENCE_COUNT + NEW_SEQUENCE_COUNT + OLD_SEQUENCE_COUNT;
+const TOTAL_FRAMES = FIRST_SEQUENCE_COUNT + SECOND_SEQUENCE_COUNT + OLD_SEQUENCE_COUNT;
 const FRAMES_DIRECTORY = "/frames/PNG%20Sequence";
 
 export const CHAPTERS: readonly Chapter[] = [
@@ -56,13 +56,13 @@ export function frameUrl(chapter: Chapter, index: number): string {
     const frame = String(frameNum).padStart(4, "0");
     return `${FRAMES_DIRECTORY}/${frame}.webp${revisionQuery(chapter)}`;
   }
-  const newOffset = i - FIRST_SEQUENCE_COUNT;
-  if (newOffset < NEW_SEQUENCE_COUNT) {
-    const frameNum = NEW_SEQUENCE_FRAMES[newOffset];
+  const secondOffset = i - FIRST_SEQUENCE_COUNT;
+  if (secondOffset < SECOND_SEQUENCE_COUNT) {
+    const frameNum = NEW_SEQUENCE_FRAMES[secondOffset];
     const frame = String(frameNum).padStart(5, "0");
     return `${FRAMES_DIRECTORY}/Shega%20Website%20Video%20${frame}.webp${revisionQuery(chapter)}`;
   }
-  const frameNum = OLD_SEQUENCE_FRAMES[newOffset - NEW_SEQUENCE_COUNT];
+  const frameNum = OLD_SEQUENCE_FRAMES[secondOffset - SECOND_SEQUENCE_COUNT];
   const frame = String(frameNum).padStart(4, "0");
   return `${FRAMES_DIRECTORY}/frame_${frame}.webp${revisionQuery(chapter)}`;
 }

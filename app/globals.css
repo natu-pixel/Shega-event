@@ -100,7 +100,7 @@ button { border: 0; }
   --hero-name-size: clamp(90px, 25.7vw, 480px);
   --hero-descriptor-size: clamp(14px, 2.4vw, 40px);
   --hero-title-gap: clamp(8px, 1.1vw, 18px);
-  position: absolute; inset: 0;
+  position: absolute; z-index: 1; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
   padding: 120px var(--gutter) clamp(112px, 17.5svh, 157px);
   opacity: var(--intro);
