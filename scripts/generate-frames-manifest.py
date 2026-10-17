@@ -1,7 +1,10 @@
-import os, re
+import os
+import re
+from pathlib import Path
 
-FRAMES_DIR = r"public\frames\PNG Sequence"
-MANIFEST_PATH = r"lib\frames-manifest.ts"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FRAMES_DIR = PROJECT_ROOT / "public" / "frames" / "PNG Sequence"
+MANIFEST_PATH = PROJECT_ROOT / "lib" / "frames-manifest.ts"
 
 old_frames = []
 new_frames = []
