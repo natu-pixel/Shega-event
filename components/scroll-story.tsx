@@ -247,7 +247,6 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
       style={{ "--story-screens": total + 1 } as CSSProperties}
     >
       <div className="story-stage" ref={stageRef}>
-        {showIntroduction && <button className="skip-story-button" type="button" onClick={skipStory}>Skip animation <span aria-hidden="true">↓</span></button>}
         <div className="story-poster">
           <Image src={posterUrl(chapter)} alt="" fill loading="eager" fetchPriority="high" sizes="100vw" style={{ objectPosition: `${chapter.focalX * 100}% 50%` }} />
         </div>
@@ -267,7 +266,7 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
             </div>
             <div className="intro-bottom">
               <p>We bring people together.<br />And make the moment matter.</p>
-              <a className="text-link" href="#about">Explore our world <span aria-hidden="true">&#8599;</span></a>
+              <button className="skip-story-button" type="button" onClick={skipStory}>Skip animation <span aria-hidden="true">↓</span></button>
             </div>
           </div>
         ) : <h1 className="sr-only">Shega Events: {chapter.name}</h1>}
