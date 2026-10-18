@@ -7,7 +7,7 @@ import { Brand } from "@/components/brand";
 import { type GalleryItem } from "@/components/CoverflowGallery";
 import Navbar from "@/components/Navbar";
 import { CONTACT_CHANNELS, INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_NAME } from "@/lib/site";
-import { FEATURED_EVENTS } from "@/lib/events";
+import { FeaturedEvents } from "@/components/featured-events";
 
 // Photographs collected from the Shega Events Instagram account. Every card keeps
 // its credit and links back to the original post; see public/events/sources.json.
@@ -313,23 +313,7 @@ export default function ShegaLandingPage() {
       </section>
 
       {/* 3. Featured events */}
-      <section id="events" className="shega-events-section" aria-label="Featured events">
-        {FEATURED_EVENTS.map((event) => (
-          <article key={event.slug} className="shega-event-card">
-            <div className="shega-event-card-bar" />
-            <div className="shega-event-image-wrap">
-              <img src={event.image} alt={event.title} loading="lazy" />
-            </div>
-            <div className="shega-event-card-copy">
-              <h2>{event.title}</h2>
-              <p>{event.detail}</p>
-              <Link href={`/events/${event.slug}`}>
-                View detail <span aria-hidden="true">↗</span>
-              </Link>
-            </div>
-          </article>
-        ))}
-      </section>
+      <FeaturedEvents />
 
       {/* 4. Visual archive */}
       <section id="gallery" className="shega-archive-section" aria-label="Visual archive">
