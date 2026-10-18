@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { FrameCache } from "@/lib/frame-cache";
-import { CHAPTERS, posterUrl, type Chapter } from "@/lib/story";
-import { chapterStart, coverRect, easeFrame, sampleStory, travelScreens } from "@/lib/timeline";
+import { CHAPTERS, FIRST_SEQUENCE_END_FRAME, OPENING_STILLS_END_FRAME, posterUrl, type Chapter } from "@/lib/story";
+import { chapterStart, clamp, coverRect, easeFrame, OPENING_SEQUENCE_SCREENS, PLAYBACK_SCREENS, sampleStory, travelScreens } from "@/lib/timeline";
 
 const motionQuery = "(prefers-reduced-motion: reduce)";
+const AUTOPLAY_DURATION_MS = 90_000;
 function subscribeMotion(callback: () => void) {
   const media = window.matchMedia(motionQuery);
   media.addEventListener("change", callback);
@@ -13,6 +14,42 @@ function subscribeMotion(callback: () => void) {
 }
 const getReducedMotion = () => window.matchMedia(motionQuery).matches;
 const getServerMotion = () => false;
+const HERO_COPY = "Not just an event.\nA feeling that stays.";
+
+function TypewriterIntro() {
+  const [characters, setCharacters] = useState(0);
+  const lineBreak = HERO_COPY.indexOf("\n");
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCharacters((count) => {
+        if (count >= HERO_COPY.length) {
+          window.clearInterval(timer);
+          return count;
+        }
+        return count + 1;
+      });
+    }, 48);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const firstLine = HERO_COPY.slice(0, Math.min(characters, lineBreak));
+  const secondLine = characters > lineBreak ? HERO_COPY.slice(lineBreak + 1, characters) : "";
+  const showCursor = characters < HERO_COPY.length;
+
+  return (
+    <p>
+      <span aria-hidden="true">
+        {firstLine}
+        {showCursor && characters <= lineBreak && <i className="typewriter-cursor" />}
+        <br />
+        {secondLine}
+        {showCursor && characters > lineBreak && <i className="typewriter-cursor" />}
+      </span>
+      <span className="sr-only">Not just an event. A feeling that stays.</span>
+    </p>
+  );
+}
 
 export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chapters?: readonly Chapter[]; introduction?: boolean }) {
   const reducedMotion = useSyncExternalStore(subscribeMotion, getReducedMotion, getServerMotion);
@@ -20,10 +57,12 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cacheRef = useRef<FrameCache | null>(null);
+  const autoPlayRef = useRef<{ startedAt: number; startDistance: number; duration: number } | null>(null);
   const [active, setActive] = useState(0);
   const [titleChapter, setTitleChapter] = useState(0);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoPlaying, setAutoPlaying] = useState(false);
   const total = travelScreens(chapters.length);
   const chapter = chapters[active] ?? chapters[0];
   const showIntroduction = introduction && !reducedMotion;
@@ -55,6 +94,7 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
     let dirty = true;
     let chapterReady = false;
     let lastStats = 0;
+    let autoTargetY = 0;
     const counts = chapters.map((item) => item.frames);
     const cache = new FrameCache(() => { dirty = true; }, setError);
     cacheRef.current = cache;
@@ -75,7 +115,49 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
         return;
       }
       section.dataset.activeLoops = "1";
-      const distance = (window.scrollY - top) / Math.max(1, height);
+      let distance = (window.scrollY - top) / Math.max(1, height);
+      const autoPlay = autoPlayRef.current;
+      if (autoPlay) {
+        const remaining = Math.max(0.001, total - autoPlay.startDistance);
+        const postOpeningScreens = PLAYBACK_SCREENS - OPENING_SEQUENCE_SCREENS;
+        const postOpeningFrames = Math.max(1, counts[0] - OPENING_STILLS_END_FRAME);
+        const openingEnd = OPENING_SEQUENCE_SCREENS;
+        const firstEnd = openingEnd + postOpeningScreens * ((FIRST_SEQUENCE_END_FRAME - OPENING_STILLS_END_FRAME) / postOpeningFrames);
+        const sequenceEnd = Math.min(PLAYBACK_SCREENS, total);
+        const segments = [
+          { start: 0, end: openingEnd, slowdown: 1, fixedDuration: 3_500 },
+          { start: openingEnd, end: firstEnd, slowdown: 2, fixedDuration: 0 },
+          { start: firstEnd, end: sequenceEnd, slowdown: 1.6, fixedDuration: 0 },
+          { start: sequenceEnd, end: total, slowdown: 1, fixedDuration: 0 },
+        ].map(({ start, end, slowdown, fixedDuration }) => {
+          const from = Math.max(start, autoPlay.startDistance);
+          const to = Math.min(end, total);
+          const share = Math.max(0, to - from) / remaining;
+          const segmentProgress = Math.max(0, to - from) / Math.max(0.001, end - start);
+          const duration = fixedDuration > 0
+            ? fixedDuration * segmentProgress
+            : autoPlay.duration * share * slowdown;
+          return { from, to, duration };
+        }).filter((segment) => segment.duration > 0);
+        const totalDuration = segments.reduce((sum, segment) => sum + segment.duration, 0);
+        const progress = clamp((time - autoPlay.startedAt) / totalDuration);
+        let elapsedShare = 0;
+        let storyDistance = autoPlay.startDistance;
+        for (const segment of segments) {
+          const timeShare = segment.duration / totalDuration;
+          const localProgress = clamp((progress - elapsedShare) / Math.max(0.001, timeShare));
+          storyDistance = segment.from + (segment.to - segment.from) * localProgress;
+          if (progress <= elapsedShare + timeShare) break;
+          elapsedShare += timeShare;
+        }
+        distance = storyDistance;
+        autoTargetY = top + distance * height;
+        window.scrollTo({ top: autoTargetY, behavior: "instant" });
+        if (progress >= 1) {
+          autoPlayRef.current = null;
+          setAutoPlaying(false);
+        }
+      }
       const sample = sampleStory(distance, counts);
       const delta = previousTime ? time - previousTime : 16.67;
       previousTime = time;
@@ -162,7 +244,25 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
         raf = requestAnimationFrame(tick);
       }
     };
-    const onScroll = () => { dirty = true; start(); };
+    const stopAutoPlay = () => {
+      if (!autoPlayRef.current) return;
+      autoPlayRef.current = null;
+      setAutoPlaying(false);
+    };
+    const onScroll = () => {
+      if (autoPlayRef.current && Math.abs(window.scrollY - autoTargetY) > Math.max(80, height * 0.15)) {
+        stopAutoPlay();
+      }
+      dirty = true;
+      start();
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Element && event.target.closest(".story-autoplay-button")) return;
+      stopAutoPlay();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) stopAutoPlay();
+    };
     const onVisibility = () => {
       cache.setActive(visible && !document.hidden);
       if (document.hidden) {
@@ -190,6 +290,10 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
     }, { rootMargin: "100px" });
     intersection.observe(section);
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("wheel", stopAutoPlay, { passive: true });
+    window.addEventListener("touchstart", stopAutoPlay, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    document.addEventListener("keydown", onKeyDown);
     window.addEventListener("resize", measure);
     window.addEventListener("pageshow", measure);
     document.addEventListener("visibilitychange", onVisibility);
@@ -209,6 +313,10 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
       resize.disconnect();
       intersection.disconnect();
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", stopAutoPlay);
+      window.removeEventListener("touchstart", stopAutoPlay);
+      window.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("resize", measure);
       window.removeEventListener("pageshow", measure);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -216,6 +324,8 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
   }, [chapters, reducedMotion, introduction]);
 
   const goToChapter = (index: number) => {
+    autoPlayRef.current = null;
+    setAutoPlaying(false);
     if (reducedMotion) {
       setActive(index);
       return;
@@ -228,10 +338,33 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
   };
 
   const skipStory = () => {
+    autoPlayRef.current = null;
+    setAutoPlaying(false);
     const destination = document.getElementById("about");
     if (!destination) return;
     const top = destination.getBoundingClientRect().top + window.scrollY;
     window.scrollTo(0, top);
+  };
+
+  const toggleAutoPlay = () => {
+    if (autoPlayRef.current) {
+      autoPlayRef.current = null;
+      setAutoPlaying(false);
+      return;
+    }
+    const section = sectionRef.current;
+    const stage = stageRef.current;
+    if (!section || !stage) return;
+    const height = Math.max(1, stage.clientHeight);
+    const top = section.getBoundingClientRect().top + window.scrollY;
+    let startDistance = clamp((window.scrollY - top) / height, 0, total);
+    if (startDistance >= total - 0.01) {
+      startDistance = 0;
+      window.scrollTo({ top, behavior: "instant" });
+    }
+    const duration = Math.max(2_000, AUTOPLAY_DURATION_MS * ((total - startDistance) / total));
+    autoPlayRef.current = { startedAt: performance.now(), startDistance, duration };
+    setAutoPlaying(true);
   };
 
   return (
@@ -261,18 +394,10 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
         {showIntroduction ? (
           <div className="hero-intro">
             <div className="intro-top">
-              <span className="eyebrow"><span className="live-dot" /> ADDIS ABABA, ETHIOPIA</span>
-              <p>Not just an event.<br />A feeling that stays.</p>
-            </div>
-            <div className="hero-title">
-              <h1>
-                <span className="hero-brand-name">SHEGA</span>{" "}
-                <span className="hero-brand-descriptor">EVENTS</span>
-              </h1>
+              <TypewriterIntro />
             </div>
             <div className="intro-bottom">
               <p>We bring people together.<br />And make the moment matter.</p>
-              <button className="skip-story-button" type="button" onClick={skipStory}>Skip animation <span aria-hidden="true">↓</span></button>
             </div>
           </div>
         ) : <h1 className="sr-only">Shega Events: {chapter.name}</h1>}
@@ -295,6 +420,21 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
             <p>{chapter.name} <span>In the moment.</span></p>
           </div>
           <div className="scroll-cue" aria-hidden="true"><span className="scroll-line" />SCROLL TO FLY</div>
+          {!reducedMotion && (
+            <div className="story-footer-controls">
+              <button className="skip-story-button" type="button" onClick={skipStory}>Skip animation</button>
+              <button
+                className="story-autoplay-button"
+                type="button"
+                onClick={toggleAutoPlay}
+                aria-pressed={autoPlaying}
+                aria-label={autoPlaying ? "Pause automatic story playback" : "Play the story automatically"}
+              >
+              <span aria-hidden="true">{autoPlaying ? "Ⅱ" : "▶"}</span>
+              {autoPlaying ? "PAUSE" : "AUTO PLAY"}
+              </button>
+            </div>
+          )}
           {chapters.length > 1 && (
             <nav className="chapter-nav" aria-label="Event chapters">
               {chapters.map((item, index) => (

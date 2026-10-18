@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ScrollStory } from "@/components/scroll-story";
 import { Brand } from "@/components/brand";
 import { type GalleryItem } from "@/components/CoverflowGallery";
 import Navbar from "@/components/Navbar";
 import { CONTACT_CHANNELS, INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_NAME } from "@/lib/site";
+import { FEATURED_EVENTS } from "@/lib/events";
 
 // Photographs collected from the Shega Events Instagram account. Every card keeps
 // its credit and links back to the original post; see public/events/sources.json.
@@ -231,25 +232,10 @@ const galleryItems: GalleryItem[] = [
 
 const stats: readonly { label: string; value: string }[] = [
   { label: "HEADQUARTERS", value: "Addis Ababa" },
-  { label: "EVENTS PRODUCED", value: "15+" },
+  { label: "EVENTS PRODUCED", value: "23+" },
   { label: "FLAGSHIP SERIES", value: "Bermel Fest" },
-  { label: "EVENT PHOTOGRAPHS", value: String(galleryItems.length) },
+  { label: "EVENT PHOTOGRAPHS", value: "Unlimited" },
 ];
-
-const featuredEvents = [
-  {
-    title: "BERMEL FEST",
-    detail: "Concert / Live experience",
-    image: galleryItems[0].image,
-    href: galleryItems[0].href,
-  },
-  {
-    title: "HALO HAWASSA",
-    detail: "Festival / Live experience",
-    image: galleryItems[16].image,
-    href: galleryItems[16].href,
-  },
-] as const;
 
 const archiveItems = [
   galleryItems[1],
@@ -263,6 +249,31 @@ const archiveItems = [
 export default function ShegaLandingPage() {
   const [activeTab, setActiveTab] = useState<"nightmakers" | "peoples">("nightmakers");
 
+  useEffect(() => {
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(".blur-reveal"));
+    if (!("IntersectionObserver" in window)) {
+      targets.forEach((target) => target.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.remove("is-pending");
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -4% 0px" });
+
+    targets.forEach((target) => {
+      const bounds = target.getBoundingClientRect();
+      if (bounds.top >= window.innerHeight || bounds.bottom < 0) target.classList.add("is-pending");
+      observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="shega-page">
       <Navbar />
@@ -275,7 +286,7 @@ export default function ShegaLandingPage() {
       <section id="about" className="shega-about-section">
         <div className="shega-container shega-about-grid">
           <div>
-            <h2 className="shega-about-headline">
+            <h2 className="shega-about-headline blur-reveal">
               AN INDEPENDENT EVENT COMPANY CREATING EXPERIENCES THAT BRING PEOPLE
               TOGETHER, FROM THE FIRST IDEA TO THE FINAL MOMENT.
             </h2>
@@ -303,8 +314,8 @@ export default function ShegaLandingPage() {
 
       {/* 3. Featured events */}
       <section id="events" className="shega-events-section" aria-label="Featured events">
-        {featuredEvents.map((event) => (
-          <article key={event.title} className="shega-event-card">
+        {FEATURED_EVENTS.map((event) => (
+          <article key={event.slug} className="shega-event-card">
             <div className="shega-event-card-bar" />
             <div className="shega-event-image-wrap">
               <img src={event.image} alt={event.title} loading="lazy" />
@@ -312,9 +323,9 @@ export default function ShegaLandingPage() {
             <div className="shega-event-card-copy">
               <h2>{event.title}</h2>
               <p>{event.detail}</p>
-              <a href={event.href} target="_blank" rel="noopener noreferrer">
-                View the moment <span aria-hidden="true">↗</span>
-              </a>
+              <Link href={`/events/${event.slug}`}>
+                View detail <span aria-hidden="true">↗</span>
+              </Link>
             </div>
           </article>
         ))}
@@ -323,7 +334,7 @@ export default function ShegaLandingPage() {
       {/* 4. Visual archive */}
       <section id="gallery" className="shega-archive-section" aria-label="Visual archive">
         <div className="shega-container shega-archive-heading">
-          <h2>THROUGH OUR<br />EYES.</h2>
+          <h2 className="blur-reveal">THROUGH OUR<br />EYES.</h2>
           <div>
             <p className="shega-archive-label">VISUAL ARCHIVES</p>
             <p>The lights, the noise. The faces. The moments between the moments.</p>
@@ -332,9 +343,13 @@ export default function ShegaLandingPage() {
         <div className="shega-archive-viewport">
           <div className="shega-archive-track">
             {[...archiveItems, ...archiveItems].map((item, index) => (
-              <a key={`${item.id}-${index}`} href={item.href} target="_blank" rel="noopener noreferrer" className="shega-archive-tile" aria-hidden={index >= archiveItems.length} tabIndex={index >= archiveItems.length ? -1 : undefined}>
-                <img src={item.image} alt={item.title} loading="lazy" />
-                <span>{item.title}</span>
+              <a key={`${item.id}-${index}`} href={item.href} target="_blank" rel="noopener noreferrer" className="shega-archive-tile" aria-label={item.title} aria-hidden={index >= archiveItems.length} tabIndex={index >= archiveItems.length ? -1 : undefined}>
+                <span className="shega-archive-tile-inner">
+                  <span className="shega-archive-face shega-archive-face-front">
+                    <img src={item.image} alt="" loading="lazy" />
+                  </span>
+                  <span className="shega-archive-face shega-archive-face-back" aria-hidden="true">{item.title}</span>
+                </span>
               </a>
             ))}
           </div>
@@ -366,7 +381,7 @@ export default function ShegaLandingPage() {
                   <span>START A PROJECT</span>
                 </div>
 
-                <h2 className="shega-contact-title">{activeTab === "nightmakers" ? <>LET&apos;S MAKE<br />IT AN EVENT.</> : <>LET&apos;S MAKE<br />IT MEMORABLE.</>}</h2>
+                <h2 key={activeTab} className="shega-contact-title kinetic-type">{activeTab === "nightmakers" ? <>LET&apos;S MAKE<br />IT AN EVENT.</> : <>LET&apos;S MAKE<br />IT MEMORABLE.</>}</h2>
 
                 <p className="shega-contact-subtext">
                   From concept to final encore &mdash; tell us what you have in mind and

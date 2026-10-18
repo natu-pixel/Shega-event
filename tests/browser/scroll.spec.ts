@@ -61,9 +61,9 @@ test("served frames are the exact files the story asks for", async ({ page }) =>
   await expect.poll(() => poster.evaluate((image) => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0)).toBe(true);
   expect(await poster.evaluate((image) => {
     if (!(image instanceof HTMLImageElement)) throw new Error("Poster image missing");
-    return new URL(image.currentSrc).pathname.endsWith("/frame_0032.webp");
+    return new URL(image.currentSrc).pathname.endsWith("/0001.webp");
   })).toBe(true);
-  expect(decodeURIComponent(posterUrl(chapter))).toContain("frame_0032.webp");
+  expect(decodeURIComponent(posterUrl(chapter))).toContain("/0001.webp");
 });
 
 test("frame loading stays inside the declared memory budgets", async ({ page }) => {
