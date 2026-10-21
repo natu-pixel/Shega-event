@@ -22,11 +22,16 @@ export type Chapter = {
 
 const OPENING_STILL_SEQUENCE = [1, 2, 3, 4, 5];
 const OPENING_STILLS_COUNT = OPENING_STILL_SEQUENCE.length;
-const FIRST_SEQUENCE_COUNT = OPENING_STILLS_COUNT + THIRD_SEQUENCE_FRAMES.length;
+// ETFC is sampled into 500 evenly spaced frames and stored beside the other
+// hero assets. Its frame range is inserted after the five opening stills.
+const ETFC_SEQUENCE_FRAMES = Array.from({ length: 500 }, (_, index) => index + 1);
+const ETFC_SEQUENCE_COUNT = ETFC_SEQUENCE_FRAMES.length;
+const FIRST_SEQUENCE_COUNT = OPENING_STILLS_COUNT + ETFC_SEQUENCE_COUNT + THIRD_SEQUENCE_FRAMES.length;
 const SECOND_SEQUENCE_COUNT = NEW_SEQUENCE_FRAMES.length;
 const TOTAL_FRAMES = FIRST_SEQUENCE_COUNT + SECOND_SEQUENCE_COUNT;
 export const FIRST_SEQUENCE_END_FRAME = FIRST_SEQUENCE_COUNT;
 export const OPENING_STILLS_END_FRAME = OPENING_STILLS_COUNT;
+export const ETFC_SEQUENCE_END_FRAME = OPENING_STILLS_COUNT + ETFC_SEQUENCE_COUNT;
 const FRAMES_DIRECTORY = "/frames/PNG%20Sequence";
 
 export const CHAPTERS: readonly Chapter[] = [
@@ -59,8 +64,15 @@ export function frameUrl(chapter: Chapter, index: number): string {
     const chapterRevision = chapter.assetRevision ? `&r=${encodeURIComponent(chapter.assetRevision)}` : "";
     return `${FRAMES_DIRECTORY}/${stillNumber}.webp?v=opening-photos-2${chapterRevision}`;
   }
-  if (i < FIRST_SEQUENCE_COUNT) {
-    const frameNum = THIRD_SEQUENCE_FRAMES[i - OPENING_STILLS_COUNT];
+  const etfcOffset = i - OPENING_STILLS_COUNT;
+  if (etfcOffset < ETFC_SEQUENCE_COUNT) {
+    const frameNum = ETFC_SEQUENCE_FRAMES[etfcOffset];
+    const frame = String(frameNum).padStart(2, "0");
+    return `${FRAMES_DIRECTORY}/ETFC_${frame}.webp${revisionQuery(chapter)}`;
+  }
+  const firstSequenceOffset = etfcOffset - ETFC_SEQUENCE_COUNT;
+  if (firstSequenceOffset < THIRD_SEQUENCE_FRAMES.length) {
+    const frameNum = THIRD_SEQUENCE_FRAMES[firstSequenceOffset];
     const frame = String(frameNum).padStart(4, "0");
     return `${FRAMES_DIRECTORY}/${frame}.webp${revisionQuery(chapter)}`;
   }
@@ -71,8 +83,7 @@ export function frameUrl(chapter: Chapter, index: number): string {
 }
 
 export function posterUrl(chapter: Chapter): string {
-  const frame = String(THIRD_SEQUENCE_FRAMES[0]).padStart(4, "0");
-  return `${FRAMES_DIRECTORY}/${frame}.webp${revisionQuery(chapter)}`;
+  return frameUrl(chapter, 0);
 }
 
 export const TOTAL_HERO_FRAMES = TOTAL_FRAMES;
