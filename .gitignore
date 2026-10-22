@@ -19,5 +19,14 @@ video/
 scripts/
 public/changer/
 
+# Video files (never commit videos)
+*.mov
+*.mp4
+*.webm
+*.mkv
+*.avi
+*.wmv
+*.flv
+
 # PNG frames are the archival source; WebP copies are served by the site.
 public/frames/PNG Sequence/*.png

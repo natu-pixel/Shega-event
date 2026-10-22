@@ -27,16 +27,17 @@ Copy the D1 `database_id` returned by Wrangler. Add these entries at the top lev
 ],
 ```
 
-Apply the schema and set the two secrets without adding them to source control:
+Apply the schema and set the three secrets without adding them to source control:
 
 ```powershell
 npx wrangler d1 migrations apply shega-events-content --remote
+npx wrangler secret put ADMIN_USERNAME
 npx wrangler secret put ADMIN_PASSWORD
 npx wrangler secret put SESSION_SECRET
 ```
 
-Use a unique admin password and a separate random session secret of at least 32 characters. Wrangler prompts for each secret. Keep production values in Cloudflare secrets; do not commit them.
+Use a unique admin username and password, and a separate random session secret of at least 32 characters. Wrangler prompts for each secret. Keep production values in Cloudflare secrets; do not commit them.
 
-For local development, add the same binding entries to the local Wrangler config and place `NEXTJS_ENV=development`, `ADMIN_PASSWORD=...`, and `SESSION_SECRET=...` in the ignored `.dev.vars` file. Local D1 migrations can be applied with `npx wrangler d1 migrations apply shega-events-content --local`.
+For local development, add the same binding entries to the local Wrangler config and place `NEXTJS_ENV=development`, `ADMIN_USERNAME=...`, `ADMIN_PASSWORD=...`, and `SESSION_SECRET=...` in the ignored `.dev.vars` file. Local D1 migrations can be applied with `npx wrangler d1 migrations apply shega-events-content --local`.
 
 After configuring the bindings and secrets, rebuild and deploy the Worker. The panel supports current, upcoming, and past event status; publishing and drafts; event descriptions and links; cover image and multi-image galleries; and deleting events. Uploaded image types are JPG, PNG, WebP, and GIF, up to 12 MB each.

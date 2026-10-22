@@ -32,13 +32,29 @@ export type MediaBucket = {
 export type AdminEnv = {
   CONTENT_DB?: ContentDatabase;
   MEDIA?: MediaBucket;
+  ADMIN_USERNAME?: string;
   ADMIN_PASSWORD?: string;
   SESSION_SECRET?: string;
 };
 
-export async function getAdminEnv() {
-  const context = await getCloudflareContext({ async: true });
-  return context.env as typeof context.env & AdminEnv;
+export async function getAdminEnv(): Promise<AdminEnv> {
+  try {
+    const context = await getCloudflareContext({ async: true });
+    const cfEnv = context.env as Record<string, unknown>;
+    return {
+      CONTENT_DB: cfEnv.CONTENT_DB as ContentDatabase | undefined,
+      MEDIA: cfEnv.MEDIA as MediaBucket | undefined,
+      ADMIN_USERNAME: (cfEnv.ADMIN_USERNAME as string | undefined) ?? process.env.ADMIN_USERNAME,
+      ADMIN_PASSWORD: (cfEnv.ADMIN_PASSWORD as string | undefined) ?? process.env.ADMIN_PASSWORD,
+      SESSION_SECRET: (cfEnv.SESSION_SECRET as string | undefined) ?? process.env.SESSION_SECRET,
+    };
+  } catch {
+    return {
+      ADMIN_USERNAME: process.env.ADMIN_USERNAME,
+      ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+      SESSION_SECRET: process.env.SESSION_SECRET,
+    };
+  }
 }
 
 const COOKIE_NAME = "shega_admin";
@@ -64,6 +80,16 @@ async function sign(value: string, secret: string) {
 export async function passwordMatches(password: string, expected: string, secret: string) {
   const actualSignature = await sign(password, secret);
   const expectedSignature = await sign(expected, secret);
+  const actual = fromBase64Url(actualSignature);
+  const wanted = fromBase64Url(expectedSignature);
+  let diff = actual.length ^ wanted.length;
+  for (let i = 0; i < Math.max(actual.length, wanted.length); i++) diff |= (actual[i] ?? 0) ^ (wanted[i] ?? 0);
+  return diff === 0;
+}
+
+export async function usernameMatches(username: string, expected: string, secret: string) {
+  const actualSignature = await sign(username.toLowerCase().trim(), secret);
+  const expectedSignature = await sign(expected.toLowerCase().trim(), secret);
   const actual = fromBase64Url(actualSignature);
   const wanted = fromBase64Url(expectedSignature);
   let diff = actual.length ^ wanted.length;
