@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 100" role="img" aria-labelledby="title">
+  <title id="title">Pepsi</title>
+  <defs><clipPath id="globe"><circle cx="54" cy="50" r="34"/></clipPath></defs>
+  <g clip-path="url(#globe)">
+    <path fill="#e32934" d="M14 10h80v38c-18 12-44 13-80 0z"/>
+    <path fill="#fff" d="M11 48c25 12 52 13 83-2v13c-25 16-54 19-83 8z"/>
+    <path fill="#145da0" d="M12 60c27 8 55 6 82-10v45H12z"/>
+  </g>
+  <circle cx="54" cy="50" r="34" fill="none" stroke="#123d70" stroke-width="2"/>
+  <text x="101" y="65" fill="#123d70" font-family="Arial,sans-serif" font-size="38" font-weight="800" letter-spacing="-2">pepsi</text>
+</svg>

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { FrameCache } from "@/lib/frame-cache";
-import { CHAPTERS, FIRST_SEQUENCE_END_FRAME, OPENING_STILLS_END_FRAME, posterUrl, type Chapter } from "@/lib/story";
-import { chapterStart, clamp, coverRect, easeFrame, OPENING_SEQUENCE_SCREENS, PLAYBACK_SCREENS, sampleStory, travelScreens } from "@/lib/timeline";
+import { CHAPTERS, ETFC_SEQUENCE_END_FRAME, FIRST_SEQUENCE_END_FRAME, OPENING_STILLS_END_FRAME, posterUrl, type Chapter } from "@/lib/story";
+import { chapterStart, clamp, coverRect, easeFrame, ETFC_SEQUENCE_SCREENS, OPENING_SEQUENCE_SCREENS, PLAYBACK_SCREENS, sampleStory, travelScreens } from "@/lib/timeline";
 
 const motionQuery = "(prefers-reduced-motion: reduce)";
 const AUTOPLAY_DURATION_MS = 90_000;
@@ -119,14 +119,14 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
       const autoPlay = autoPlayRef.current;
       if (autoPlay) {
         const remaining = Math.max(0.001, total - autoPlay.startDistance);
-        const postOpeningScreens = PLAYBACK_SCREENS - OPENING_SEQUENCE_SCREENS;
-        const postOpeningFrames = Math.max(1, counts[0] - OPENING_STILLS_END_FRAME);
         const openingEnd = OPENING_SEQUENCE_SCREENS;
-        const firstEnd = openingEnd + postOpeningScreens * ((FIRST_SEQUENCE_END_FRAME - OPENING_STILLS_END_FRAME) / postOpeningFrames);
+        const etfcEnd = openingEnd + ETFC_SEQUENCE_SCREENS;
+        const firstEnd = etfcEnd + (PLAYBACK_SCREENS - etfcEnd) * ((FIRST_SEQUENCE_END_FRAME - ETFC_SEQUENCE_END_FRAME) / Math.max(1, counts[0] - ETFC_SEQUENCE_END_FRAME));
         const sequenceEnd = Math.min(PLAYBACK_SCREENS, total);
         const segments = [
           { start: 0, end: openingEnd, slowdown: 1, fixedDuration: 3_500 },
-          { start: openingEnd, end: firstEnd, slowdown: 2, fixedDuration: 0 },
+          { start: openingEnd, end: etfcEnd, slowdown: 3, fixedDuration: 0 },
+          { start: etfcEnd, end: firstEnd, slowdown: 2, fixedDuration: 0 },
           { start: firstEnd, end: sequenceEnd, slowdown: 1.6, fixedDuration: 0 },
           { start: sequenceEnd, end: total, slowdown: 1, fixedDuration: 0 },
         ].map(({ start, end, slowdown, fixedDuration }) => {
@@ -446,7 +446,6 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
           )}
         </div>
         {!ready && !reducedMotion && !error && <span className="frame-status" role="status">Preparing the scene<span aria-hidden="true">...</span></span>}
-        {error && <div className="frame-error" role="status">{error}<button type="button" onClick={() => cacheRef.current?.retryFailures()}>Retry frames</button></div>}
         <div className="film-progress" aria-hidden="true"><span /></div>
       </div>
       <noscript><style>{".scroll-story{height:100svh!important}.scroll-cue,.frame-status,.chapter-nav{display:none!important}"}</style></noscript>

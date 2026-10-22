@@ -6,10 +6,18 @@ playwright-report/
 *.tsbuildinfo
 .env*
 !.env.example
+.dev.vars
 __pycache__/
 .venv-assets/
 .open-next/
 .wrangler/
 .render-worktree/
+.kilo/
+
+# Dev tooling & asset-processing scripts (not needed in production)
+video/
+scripts/
+public/changer/
+
 # PNG frames are the archival source; WebP copies are served by the site.
 public/frames/PNG Sequence/*.png

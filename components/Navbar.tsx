@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import "./Navbar.css";
 
 export type NavLink = { label: string; href: string }; // href like "#gallery"
@@ -14,9 +15,11 @@ type Props = {
 };
 
 const DEFAULT_LINKS: NavLink[] = [
-  { label: "Experience", href: "#experience" },
-  { label: "Gallery", href: "#gallery" },
+  { label: "Home", href: "#experience" },
   { label: "About", href: "#about" },
+  { label: "Upcoming", href: "#upcoming" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Service", href: "#services" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -27,14 +30,19 @@ export default function Navbar({
   ctaLabel = "Let's Talk",
   ctaHref = "#contact",
 }: Props) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false); // past the top -> frosted glass
   const [hidden, setHidden] = useState(false); // hide while scrolling down
   const [open, setOpen] = useState(false); // mobile menu
-  const [activeId, setActiveId] = useState(links[0]?.href ?? "");
+  const [activeId, setActiveId] = useState(pathname === "/gallery" ? "/gallery" : links[0]?.href ?? "");
   const lastY = useRef(0);
 
   /* scroll behaviour: glass after 24px, hide on scroll down, show on scroll up */
   useEffect(() => {
+    if (pathname === "/gallery") {
+      setActiveId("/gallery");
+      return;
+    }
     const onScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 24);
@@ -52,6 +60,7 @@ export default function Navbar({
   /* scroll-spy: highlight the link of the section in view */
   useEffect(() => {
     const els = links
+      .filter((link) => link.href.startsWith("#"))
       .map((l) => document.querySelector(l.href))
       .filter(Boolean) as Element[];
     if (!els.length) return;
@@ -64,7 +73,9 @@ export default function Navbar({
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [links]);
+  }, [links, pathname]);
+
+  const hrefFor = (href: string) => pathname !== "/" && href.startsWith("#") ? `/${href}` : href;
 
   /* lock body scroll while mobile menu is open */
   useEffect(() => {
@@ -80,16 +91,15 @@ export default function Navbar({
         className={`nv ${scrolled ? "is-glass" : ""} ${hidden ? "is-hidden" : ""}`}
       >
         <div className="nv__inner">
-          <a href="#experience" className="nv__logo" aria-label={logoAlt}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={logoSrc} alt={logoAlt} height={40} />
+          <a href={hrefFor(ctaHref)} className="nv__cta">
+            <span>{ctaLabel}</span><span className="nv__cta-arrow" aria-hidden="true">↗</span>
           </a>
 
           <nav className="nv__links" aria-label="Primary">
             {links.map((l) => (
               <a
-                key={l.href}
-                href={l.href}
+                key={`${l.label}-${l.href}`}
+                href={hrefFor(l.href)}
                 className={activeId === l.href ? "is-active" : ""}
               >
                 {l.label}
@@ -98,9 +108,6 @@ export default function Navbar({
           </nav>
 
           <div className="nv__right">
-            <a href={ctaHref} className="nv__cta">
-              <span>{ctaLabel}</span>
-            </a>
             <button
               className={`nv__burger ${open ? "is-open" : ""}`}
               onClick={() => setOpen((o) => !o)}
@@ -119,7 +126,7 @@ export default function Navbar({
         {links.map((l, i) => (
           <a
             key={l.href}
-            href={l.href}
+            href={hrefFor(l.href)}
             onClick={() => setOpen(false)}
             style={{ transitionDelay: open ? `${120 + i * 60}ms` : "0ms" }}
           >
@@ -127,7 +134,7 @@ export default function Navbar({
           </a>
         ))}
         <a
-          href={ctaHref}
+          href={hrefFor(ctaHref)}
           className="nv__sheet-cta"
           onClick={() => setOpen(false)}
         >

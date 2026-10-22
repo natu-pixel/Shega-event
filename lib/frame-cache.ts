@@ -1,4 +1,4 @@
-import { frameUrl, type Chapter } from "./story";
+import { ETFC_SEQUENCE_END_FRAME, FIRST_SEQUENCE_END_FRAME, OPENING_STILLS_END_FRAME, frameUrl, type Chapter } from "./story";
 
 type FrameImage = ImageBitmap | HTMLImageElement;
 export type DecodedFrame = {
@@ -15,9 +15,19 @@ type Focus = { chapter: Chapter; current: number; target: number; next?: Chapter
 const MIB = 1024 * 1024;
 const DECODED_BUDGET = 64 * MIB;
 const ENCODED_BUDGET = 48 * MIB;
-const DECODE_RADIUS = 4;
+const DEFAULT_DECODE_RADIUS = 4;
 const PREFETCH_AHEAD = 12;
 const keyFor = (chapter: Chapter, index: number) => `${chapter.id}:${index}`;
+
+function lowDataStride(): number {
+  if (typeof navigator === "undefined") return 1;
+  const connection = (navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+  }).connection;
+  if (connection?.saveData) return 3;
+  if (connection?.effectiveType === "slow-2g" || connection?.effectiveType === "2g") return 3;
+  return 1;
+}
 
 export class FrameCache {
   private encoded = new Map<string, Blob>();
@@ -34,6 +44,8 @@ export class FrameCache {
   private signature = "";
   private disposed = false;
   private active = true;
+  private readonly frameStride = lowDataStride();
+  private readonly decodeRadius = this.frameStride > 1 ? 2 : DEFAULT_DECODE_RADIUS;
   private encodedBytes = 0;
   private decodedBytes = 0;
   private concurrency = 3;
@@ -44,7 +56,9 @@ export class FrameCache {
   ) {}
 
   request(chapter: Chapter, current: number, target: number, next?: Chapter) {
-    const signature = `${chapter.id}:${Math.round(current)}:${Math.round(target)}:${next?.id ?? ""}`;
+    current = this.normalizeIndex(chapter, Math.round(current));
+    target = this.normalizeIndex(chapter, Math.round(target));
+    const signature = `${chapter.id}:${current}:${target}:${next?.id ?? ""}`;
     if (signature === this.signature || this.disposed) return;
     this.signature = signature;
     this.focus = { chapter, current: Math.round(current), target: Math.round(target), next };
@@ -58,6 +72,7 @@ export class FrameCache {
   }
 
   private enqueue(chapter: Chapter, index: number, decode: boolean) {
+    index = this.normalizeIndex(chapter, index);
     if (index < 0 || index >= chapter.frames) return;
     const key = keyFor(chapter, index);
     if (decode) this.wanted.add(key);
@@ -76,16 +91,29 @@ export class FrameCache {
     this.protectedKeys = new Set([keyFor(chapter, current), keyFor(chapter, target)]);
     this.enqueue(chapter, current, true);
     this.enqueue(chapter, target, true);
-    for (let offset = 1; offset <= DECODE_RADIUS; offset++) {
+    for (let offset = 1; offset <= this.decodeRadius; offset++) {
       this.enqueue(chapter, current + offset, true);
       this.enqueue(chapter, current - offset, true);
     }
     const direction = Math.sign(target - current) || 1;
-    for (let offset = DECODE_RADIUS + 1; offset <= DECODE_RADIUS + PREFETCH_AHEAD; offset++) {
-      this.enqueue(chapter, current + direction * offset, false);
+    if (this.frameStride === 1) {
+      for (let offset = this.decodeRadius + 1; offset <= this.decodeRadius + PREFETCH_AHEAD; offset++) {
+        this.enqueue(chapter, current + direction * offset, false);
+      }
     }
     if (next) this.enqueue(next, 0, false);
     this.pump();
+  }
+
+  private normalizeIndex(chapter: Chapter, index: number): number {
+    if (this.frameStride === 1 || chapter.id !== "shega") return index;
+    if (index < OPENING_STILLS_END_FRAME) return 0;
+    const start = index < ETFC_SEQUENCE_END_FRAME
+      ? OPENING_STILLS_END_FRAME
+      : index < FIRST_SEQUENCE_END_FRAME
+        ? ETFC_SEQUENCE_END_FRAME
+        : FIRST_SEQUENCE_END_FRAME;
+    return start + Math.floor((index - start) / this.frameStride) * this.frameStride;
   }
 
   private pump() {
@@ -191,7 +219,7 @@ export class FrameCache {
   }
 
   nearest(chapter: Chapter, index: number, direction: -1 | 0 | 1 = 0): DecodedFrame | undefined {
-    const desiredIndex = Math.round(index);
+    const desiredIndex = this.normalizeIndex(chapter, Math.round(index));
     let nearest: DecodedFrame | undefined;
     let nearestKey = "";
     for (const [key, frame] of this.decoded) {

@@ -1,7 +1,8 @@
-import { FIRST_SEQUENCE_END_FRAME, OPENING_STILLS_END_FRAME } from "./story";
+import { ETFC_SEQUENCE_END_FRAME, OPENING_STILLS_END_FRAME } from "./story";
 
 export const PLAYBACK_SCREENS = 3;
 export const OPENING_SEQUENCE_SCREENS = 0.5;
+export const ETFC_SEQUENCE_SCREENS = 1.25;
 export const BRIDGE_SCREENS = 0.6;
 export const EXIT_SCREENS = 0.5;
 
@@ -62,10 +63,15 @@ export function sampleStory(distance: number, counts: readonly number[]): StoryS
       const frame = chapter === 0
         ? local <= OPENING_SEQUENCE_SCREENS
           ? frameAtProgress(local / OPENING_SEQUENCE_SCREENS, OPENING_STILLS_END_FRAME)
-          : OPENING_STILLS_END_FRAME - 1 + frameAtProgress(
-            (local - OPENING_SEQUENCE_SCREENS) / (PLAYBACK_SCREENS - OPENING_SEQUENCE_SCREENS),
-            counts[chapter] - OPENING_STILLS_END_FRAME + 1,
-          )
+          : local <= OPENING_SEQUENCE_SCREENS + ETFC_SEQUENCE_SCREENS
+            ? OPENING_STILLS_END_FRAME - 1 + frameAtProgress(
+              (local - OPENING_SEQUENCE_SCREENS) / ETFC_SEQUENCE_SCREENS,
+              ETFC_SEQUENCE_END_FRAME - OPENING_STILLS_END_FRAME + 1,
+            )
+            : ETFC_SEQUENCE_END_FRAME - 1 + frameAtProgress(
+              (local - OPENING_SEQUENCE_SCREENS - ETFC_SEQUENCE_SCREENS) / (PLAYBACK_SCREENS - OPENING_SEQUENCE_SCREENS - ETFC_SEQUENCE_SCREENS),
+              counts[chapter] - ETFC_SEQUENCE_END_FRAME + 1,
+            )
         : frameAtProgress(progress, counts[chapter]);
       return {
         ...base, chapter, titleChapter: chapter, phase: "playback",
