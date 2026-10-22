@@ -26,7 +26,7 @@ export default function GalleryContent() {
   return (
     <main className="gallery-page">
       <Navbar />
-      {!showLastPage ? <section className="gallery-archive" aria-label="Visual archive">
+      <section className="gallery-archive" aria-label="Visual archive">
         <header className="gallery-intro">
           <p className="gallery-kicker">SHEGA EVENTS&nbsp; / &nbsp;THE ARCHIVE</p>
           <h1>Our<br />Visual Archives</h1>
