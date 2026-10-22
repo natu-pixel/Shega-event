@@ -345,6 +345,22 @@ button { border: 0; }
 .shega-services-kicker { margin: 0 0 12px; color: #db5d1c; font-size: 9px; font-weight: 800; letter-spacing: .16em; }
 .shega-services-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 32px; }
 .shega-services-heading h2 { margin: 0; font-size: clamp(38px, 6vw, 76px); line-height: .88; letter-spacing: -.075em; text-transform: uppercase; }
+.shega-services-heading .fx-typewriter {
+  --ink: currentColor;
+  --ink-2: #ff4fd8;
+  box-sizing: content-box;
+  width: 23ch;
+  overflow: hidden;
+  border-right: .55ch solid var(--ink-2);
+  color: var(--ink);
+  font: 600 clamp(14px, 4.2vw, 58px) / .95 "JetBrains Mono", monospace;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: fx-type 3.6s steps(23, end) infinite, fx-caret .65s steps(1) infinite;
+}
+@keyframes fx-type { 0%, 8% { width: 0; } 55%, 100% { width: 23ch; } }
+@keyframes fx-caret { 50% { border-color: transparent; } }
 .shega-services-heading p { max-width: 300px; margin: 0 0 4px; color: #625b54; font-size: 13px; line-height: 1.55; }
 .shega-services-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .shega-service-card { min-height: 190px; padding: 22px; background: #fff; border-radius: 5px; }
@@ -1094,6 +1110,7 @@ button { border: 0; }
   .chapter-caption { opacity: 1; }
   .blur-reveal.is-pending { opacity: 1; filter: none; transform: none; }
   .shega-archive-tile-inner { transform: none !important; }
+  .shega-services-heading .fx-typewriter { width: auto; border-right: 0; animation: none; }
   .shega-archive-face-back { transform: none; opacity: 0; }
   .shega-archive-tile:hover .shega-archive-face-back, .shega-archive-tile:focus-visible .shega-archive-face-back { opacity: 1; }
 }

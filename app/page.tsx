@@ -83,7 +83,7 @@ export default function ShegaLandingPage() {
         <div className="shega-container">
           <p className="shega-services-kicker">WHAT WE DO</p>
           <div className="shega-services-heading">
-            <h2 id="services-title">Ideas into<br />experiences.</h2>
+            <h2 id="services-title" className="fx-typewriter">Ideas into experiences.</h2>
             <p>From the first brief to the final guest leaving, we bring every moving part together.</p>
           </div>
           <div className="shega-services-grid">
