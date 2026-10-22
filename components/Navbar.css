@@ -229,12 +229,11 @@
 }
 
 @media (max-width: 860px) {
-  .nv__inner { width: 100%; height: 50px; max-width: 100%; padding: 0 12px; justify-content: center; gap: 5px; }
+  .nv__inner { width: 100%; height: 50px; max-width: 100%; padding: 0 12px; justify-content: flex-end; gap: 5px; }
   .nv.is-glass .nv__inner { height: 50px; }
-  .nv__links { gap: 3px; }
-  .nv__links a { padding: 6px 8px; font-size: 9px; }
-  .nv__cta { padding: 7px 8px 7px 10px; font-size: 9px; }
-.nv__cta-arrow { width: 13px; height: 13px; }
+  .nv__links, .nv__cta { display: none; }
+  .nv__right { display: flex; justify-content: flex-end; }
+  .nv__burger { display: block; }
 }
 
 /* The compact orange CTA needs a contrasting label after the base link styles. */

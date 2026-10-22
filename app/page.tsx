@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import { CONTACT_CHANNELS, SITE_NAME } from "@/lib/site";
 import { UpcomingEventCountdown } from "@/components/upcoming-event-countdown";
 import { FeaturedEvents } from "@/components/featured-events";
+import { BlogPreview } from "@/components/blog-preview";
 
 const stats: readonly { label: string; value: string }[] = [
   { label: "HEADQUARTERS", value: "Addis Ababa" },
@@ -129,6 +130,8 @@ export default function ShegaLandingPage() {
 
       {/* 4. Featured Events Gallery */}
       <FeaturedEvents />
+
+      <BlogPreview />
 
       {/* 5. International Artists */}
       <section id="contact" className="shega-dark-section">

@@ -230,7 +230,7 @@ export default function AdminPage() {
 
   return (
     <main className="admin-page">
-      <header className="admin-topbar"><Link href="/" className="admin-brand"><span className="admin-brand-mark">S</span><span>SHEGA <i>CONTENT STUDIO</i></span></Link><div>{(process.env.NODE_ENV === "development" || !configured) && <span className="admin-local-badge">LOCAL PREVIEW · changes stay here</span>}<a href="/" target="_blank" rel="noreferrer">View site ↗</a><button type="button" onClick={signOut}>Sign out</button></div></header>
+      <header className="admin-topbar"><Link href="/" className="admin-brand"><span className="admin-brand-mark">S</span><span>SHEGA <i>CONTENT STUDIO</i></span></Link><div>{(process.env.NODE_ENV === "development" || !configured) && <span className="admin-local-badge">LOCAL PREVIEW · changes stay here</span>}<Link href="/admin/blog">Manage blog</Link><a href="/" target="_blank" rel="noreferrer">View site ↗</a><button type="button" onClick={signOut}>Sign out</button></div></header>
       <div className="admin-layout">
         <aside className="admin-sidebar">
           <div className="admin-sidebar-heading"><div><span className="admin-kicker">YOUR CONTENT</span><h2>Events</h2></div><button type="button" className="admin-add-button" onClick={startNew}>＋</button></div>
