@@ -78,8 +78,10 @@ async function sign(value: string, secret: string) {
 }
 
 export async function passwordMatches(password: string, expected: string, secret: string) {
-  const actualSignature = await sign(password, secret);
-  const expectedSignature = await sign(expected, secret);
+  const cleanPass = password.replace(/[\r\n]/g, "").trim();
+  const cleanExpected = expected.replace(/[\r\n]/g, "").trim();
+  const actualSignature = await sign(cleanPass, secret);
+  const expectedSignature = await sign(cleanExpected, secret);
   const actual = fromBase64Url(actualSignature);
   const wanted = fromBase64Url(expectedSignature);
   let diff = actual.length ^ wanted.length;
@@ -88,8 +90,10 @@ export async function passwordMatches(password: string, expected: string, secret
 }
 
 export async function usernameMatches(username: string, expected: string, secret: string) {
-  const actualSignature = await sign(username.toLowerCase().trim(), secret);
-  const expectedSignature = await sign(expected.toLowerCase().trim(), secret);
+  const cleanUser = username.replace(/[\r\n]/g, "").toLowerCase().trim();
+  const cleanExpected = expected.replace(/[\r\n]/g, "").toLowerCase().trim();
+  const actualSignature = await sign(cleanUser, secret);
+  const expectedSignature = await sign(cleanExpected, secret);
   const actual = fromBase64Url(actualSignature);
   const wanted = fromBase64Url(expectedSignature);
   let diff = actual.length ^ wanted.length;

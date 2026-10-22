@@ -20,11 +20,17 @@ export async function POST(request: Request) {
     const now = Math.floor(Date.now() / 1000);
     const attempt = await env.CONTENT_DB.prepare("INSERT INTO admin_login_attempts (ip_key, attempts, window_started_at) VALUES (?, 1, ?) ON CONFLICT(ip_key) DO UPDATE SET attempts = CASE WHEN window_started_at <= ? THEN 1 ELSE attempts + 1 END, window_started_at = CASE WHEN window_started_at <= ? THEN excluded.window_started_at ELSE window_started_at END RETURNING attempts")
       .bind(ipKey, now, now - 900, now - 900).first<{ attempts: number }>();
-    if ((attempt?.attempts ?? 0) > 8) return Response.json({ error: "Too many attempts. Wait 15 minutes and try again." }, { status: 429 });
-    if (typeof body.username !== "string" || body.username.length > 300 || !await usernameMatches(body.username, env.ADMIN_USERNAME, env.SESSION_SECRET)) {
+    if ((attempt?.attempts ?? 0) > 12) return Response.json({ error: "Too many attempts. Wait 15 minutes and try again." }, { status: 429 });
+    const user = typeof body.username === "string" ? body.username.replace(/[\r\n]/g, "").trim() : "";
+    const pass = typeof body.password === "string" ? body.password.replace(/[\r\n]/g, "").trim() : "";
+    if (!user || !pass || user.length > 300 || pass.length > 300) {
       return Response.json({ error: "Invalid username or password." }, { status: 401 });
     }
-    if (typeof body.password !== "string" || body.password.length > 300 || !await passwordMatches(body.password, env.ADMIN_PASSWORD, env.SESSION_SECRET)) {
+
+    const userMatches = await usernameMatches(user, env.ADMIN_USERNAME, env.SESSION_SECRET);
+    const passMatches = await passwordMatches(pass, env.ADMIN_PASSWORD, env.SESSION_SECRET);
+
+    if (!userMatches || !passMatches) {
       return Response.json({ error: "Invalid username or password." }, { status: 401 });
     }
     await env.CONTENT_DB.prepare("DELETE FROM admin_login_attempts WHERE ip_key = ?").bind(ipKey).run();

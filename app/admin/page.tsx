@@ -89,17 +89,6 @@ export default function AdminPage() {
     submit.preventDefault();
     setBusy(true); setError("");
     try {
-      if (process.env.NODE_ENV === "development" || !configured) {
-        const cleanUser = username.trim().toLowerCase();
-        const cleanPass = password.trim();
-        if (cleanUser === "admin" && (cleanPass === "admin" || cleanPass === "shega2026" || cleanPass === "shega-admin")) {
-          setAuthenticated(true); setUsername(""); setPassword("");
-          return;
-        } else if (!configured) {
-          throw new Error("Invalid credentials. For preview mode, use username: admin and password: admin");
-        }
-      }
-
       const response = await fetch("/api/admin/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
       if (!response.ok) throw new Error(await responseError(response));
       setAuthenticated(true); setUsername(""); setPassword("");
@@ -193,7 +182,7 @@ export default function AdminPage() {
 
         {!configured && (
           <div className="admin-alert">
-            Preview mode active. Sign in with <b>admin</b> / <b>admin</b> to manage your events.
+            Admin configuration missing. Configure your Cloudflare secrets to enable sign in.
           </div>
         )}
 
@@ -235,12 +224,6 @@ export default function AdminPage() {
         <button className="admin-primary-button" type="submit" disabled={busy}>
           {busy ? "Signing in…" : "Sign in"}<span>↗</span>
         </button>
-
-        <div className="admin-credentials-hint">
-          <span>Default username: <strong>admin</strong> · password: <strong>admin</strong></span>
-          <br />
-          <small>Cloudflare command: <code>npx wrangler secret put ADMIN_PASSWORD</code></small>
-        </div>
       </form>
     </main>
   );
