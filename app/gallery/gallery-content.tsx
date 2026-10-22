@@ -29,7 +29,7 @@ export default function GalleryContent() {
       <section className="gallery-archive" aria-label="Visual archive">
         <header className="gallery-intro">
           <p className="gallery-kicker">SHEGA EVENTS&nbsp; / &nbsp;THE ARCHIVE</p>
-          <h1>Our<br />Visual Archives</h1>
+          <h1 className="fx-echo" data-text="Our Visual Archives">Our Visual Archives</h1>
           <p className="gallery-description">Reflections of our grandest nights captured in the photographs across the decades, this visual narrative is our priority shared together from incredible memories of our passionate community.</p>
           <span className="gallery-scroll-note"><i /> DRAG OR SCROLL TO EXPLORE</span>
         </header>
