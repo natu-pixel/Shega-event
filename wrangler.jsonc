@@ -1,15 +1,31 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "shega-event",
-  "compatibility_date": "2026-10-13",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": ".open-next/worker.js",
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-  "observability": {
-    "enabled": true
-  },
-  "account_id": "650ca8cde8dff7e84cacaaeb07464446"
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "shega-event",
+	"compatibility_date": "2026-10-13",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": ".open-next/worker.js",
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"account_id": "650ca8cde8dff7e84cacaaeb07464446",
+	"d1_databases": [
+		{
+			"binding": "CONTENT_DB",
+			"database_name": "shega-events-content",
+			"database_id": "68f8779a-ed79-491d-ac59-fbf38b928ff1",
+			"migrations_dir": "migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "shega-events-media",
+			"binding": "MEDIA"
+		}
+	]
 }

@@ -42,8 +42,8 @@ export async function getAdminEnv(): Promise<AdminEnv> {
     const context = await getCloudflareContext({ async: true });
     const cfEnv = context.env as Record<string, unknown>;
     return {
-      CONTENT_DB: cfEnv.CONTENT_DB as ContentDatabase | undefined,
-      MEDIA: cfEnv.MEDIA as MediaBucket | undefined,
+      CONTENT_DB: (cfEnv.CONTENT_DB ?? cfEnv.shega_events_content) as ContentDatabase | undefined,
+      MEDIA: (cfEnv.MEDIA ?? cfEnv.shega_events_media) as MediaBucket | undefined,
       ADMIN_USERNAME: (cfEnv.ADMIN_USERNAME as string | undefined) ?? process.env.ADMIN_USERNAME,
       ADMIN_PASSWORD: (cfEnv.ADMIN_PASSWORD as string | undefined) ?? process.env.ADMIN_PASSWORD,
       SESSION_SECRET: (cfEnv.SESSION_SECRET as string | undefined) ?? process.env.SESSION_SECRET,
