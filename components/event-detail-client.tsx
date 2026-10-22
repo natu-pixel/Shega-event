@@ -14,13 +14,18 @@ export function EventDetailClient({ slug, fallback }: { slug: string; fallback?:
   useEffect(() => {
     const preview = getLocalPreviewEvents();
     if (preview) {
-      setEvent(preview.find((item) => item.slug === slug && item.published) ?? null);
+      const found = preview.find((item) => item.slug === slug && item.published);
+      if (found) setEvent(found);
       setLoaded(true);
       return;
     }
-    fetch("/api/events", { cache: "no-store" }).then((response) => response.ok ? response.json() as Promise<ManagedEvent[]> : [])
-      .then((items) => setEvent(items.find((item) => item.slug === slug) ?? null))
-      .catch(() => setEvent(null))
+    fetch("/api/events", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() as Promise<ManagedEvent[]> : [])
+      .then((items) => {
+        const found = items.find((item) => item.slug === slug);
+        if (found) setEvent(found);
+      })
+      .catch(() => undefined)
       .finally(() => setLoaded(true));
   }, [slug]);
 

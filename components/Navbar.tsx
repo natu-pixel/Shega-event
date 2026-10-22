@@ -17,6 +17,7 @@ type Props = {
 const DEFAULT_LINKS: NavLink[] = [
   { label: "Home", href: "#experience" },
   { label: "About", href: "#about" },
+  { label: "Events", href: "#events" },
   { label: "Upcoming", href: "#upcoming" },
   { label: "Gallery", href: "/gallery" },
   { label: "Service", href: "#services" },
