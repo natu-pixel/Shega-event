@@ -81,7 +81,7 @@ export default function ShegaLandingPage() {
 
       <section id="services" className="shega-services-section" aria-labelledby="services-title">
         <div className="shega-container">
-          <p className="shega-services-kicker"><span className="fx-negative" data-text="Stories in motion.">Stories in motion.</span></p>
+          <p className="shega-services-kicker">WHAT WE DO</p>
           <div className="shega-services-heading">
             <h2 id="services-title" className="fx-typewriter">Ideas into experiences.</h2>
             <p>From the first brief to the final guest leaving, we bring every moving part together.</p>
