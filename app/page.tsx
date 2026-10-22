@@ -13,7 +13,6 @@ const stats: readonly { label: string; value: string }[] = [
   { label: "HEADQUARTERS", value: "Addis Ababa" },
   { label: "EVENTS PRODUCED", value: "23+" },
   { label: "FLAGSHIP SERIES", value: "Bermel Fest" },
-  { label: "EVENT PHOTOGRAPHS", value: "Unlimited" },
 ];
 
 export default function ShegaLandingPage() {
