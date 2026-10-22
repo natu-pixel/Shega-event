@@ -130,11 +130,11 @@ export default function ShegaLandingPage() {
       {/* 4. Featured Events Gallery */}
       <FeaturedEvents />
 
-      {/* 5. Contact */}
+      {/* 5. International Artists */}
       <section id="contact" className="shega-dark-section">
         <div className="shega-container">
           <div className="shega-switcher-header">
-            <h2 className="shega-section-title-lg">WHAT<br />PEOPLE SAY.</h2>
+            <h2 className="shega-section-title-lg">INTERNATIONAL<br />ARTISTS</h2>
           </div>
 
           <div className="shega-divider-stage">
@@ -146,26 +146,31 @@ export default function ShegaLandingPage() {
               <div>
                 <div className="shega-eyebrow-light">
                   <span className="shega-orange-dot" />
-                  <span>START A PROJECT</span>
+                  <span>GLOBAL TALENT</span>
                 </div>
 
-                <h2 className="shega-contact-title kinetic-type">LET&apos;S MAKE<br />IT MEMORABLE.</h2>
+                <h2 className="shega-contact-title kinetic-type">ARTISTS<br />FROM EVERYWHERE.</h2>
 
                 <p className="shega-contact-subtext">
-                  From concept to final encore &mdash; tell us what you have in mind and
-                  we&apos;ll build something people talk about long after the lights come up.
+                  From Addis Ababa to the world &mdash; we bring artists, DJs and performers
+                  together for moments that stay with the audience long after the lights go up.
                 </p>
               </div>
 
               <div className="shega-contact-info-list">
-                {CONTACT_CHANNELS.map((channel) => (
-                  <div key={channel.label} className="shega-contact-info-row">
-                    <span className="shega-contact-label">{channel.label}</span>
-                    <a href={channel.href} target="_blank" rel="noopener noreferrer" className="shega-contact-link">
-                      {channel.value}
-                    </a>
-                  </div>
-                ))}
+                <div className="shega-contact-info-row">
+                  <span className="shega-contact-label">Featured</span>
+                  <a href="https://www.instagram.com/shega_events/" target="_blank" rel="noopener noreferrer" className="shega-contact-link">
+                    @shega_events
+                  </a>
+                </div>
+
+                <div className="shega-contact-info-row">
+                  <span className="shega-contact-label">Reach</span>
+                  <a href="mailto:info@shega.events" target="_blank" rel="noopener noreferrer" className="shega-contact-link">
+                    info@shega.events
+                  </a>
+                </div>
 
                 <p className="shega-contact-footnote">
                   BASED IN ADDIS ABABA &middot; PRODUCING ACROSS ETHIOPIA &amp; BEYOND
@@ -174,22 +179,21 @@ export default function ShegaLandingPage() {
             </div>
 
             <div className="shega-form-card">
-              <h3 className="shega-form-heading">TELL US ABOUT YOUR EVENT</h3>
+              <h3 className="shega-form-heading">INVITE AN ARTIST</h3>
               <p className="shega-contact-subtext">
-                Give us the first details. Your email app will open with a ready-to-send brief.
+                Tell us about the artist you want to feature and we will get in touch.
               </p>
               <form
                 className="shega-inquiry-form"
                 onSubmit={(event) => {
                   event.preventDefault();
                   const values = new FormData(event.currentTarget);
-                  const subject = `Event inquiry: ${values.get("eventType")}`;
+                  const subject = `Artist inquiry: ${values.get("artistName")}`;
                   const body = [
-                    `Name: ${values.get("name")}`,
+                    `Artist: ${values.get("artistName")}`,
+                    `Genre: ${values.get("genre") || "Not set"}`,
                     `Email: ${values.get("email")}`,
-                    `Event type: ${values.get("eventType")}`,
-                    `Date: ${values.get("date") || "Not set"}`,
-                    `Estimated guests: ${values.get("guests") || "Not sure yet"}`,
+                    `Label / management: ${values.get("label") || "Not set"}`,
                     "",
                     String(values.get("brief") || ""),
                   ].join("\\n");
@@ -197,18 +201,17 @@ export default function ShegaLandingPage() {
                 }}
               >
                 <div className="shega-form-fields">
-                  <label>Name<input name="name" autoComplete="name" placeholder="Your name" required /></label>
+                  <label>Artist name<input name="artistName" autoComplete="name" placeholder="e.g. Kali" required /></label>
                   <label>Email<input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
-                  <label>Event type<select name="eventType" defaultValue="" required>
-                    <option value="" disabled>Select an event</option>
-                    <option>Concert</option><option>Festival</option><option>Brand activation</option><option>Private event</option><option>Other</option>
+                  <label>Genre<select name="genre" defaultValue="" required>
+                    <option value="" disabled>Select a genre</option>
+                    <option>Electronic</option><option>House</option><option>Techno</option><option>Jazz</option><option>Hip Hop</option><option>Live Band</option><option>Other</option>
                   </select></label>
-                  <label>Target date<input name="date" type="date" /></label>
-                  <label className="shega-form-wide">Estimated guests<input name="guests" type="number" min="1" placeholder="e.g. 500" /></label>
-                  <label className="shega-form-wide">Tell us a little more<textarea name="brief" rows={3} placeholder="Location, goals, or anything you have in mind" required /></label>
+                  <label>Label or management<input name="label" placeholder="Optional" /></label>
+                  <label className="shega-form-wide">Tell us a little more<textarea name="brief" rows={3} placeholder="Style, hometown, links, or anything we should know" required /></label>
                 </div>
                 <div className="shega-form-actions">
-                  <button className="shega-submit-pill" type="submit">Prepare event brief <span aria-hidden="true">↗</span></button>
+                  <button className="shega-submit-pill" type="submit">Send artist brief <span aria-hidden="true">↗</span></button>
                   <span className="shega-form-note">Opens your email app to send to info@shega.events</span>
                 </div>
               </form>

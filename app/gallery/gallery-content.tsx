@@ -50,22 +50,7 @@ export default function GalleryContent() {
             })}
           </div>
         ) : <p className="gallery-page-empty">No published event albums yet. Publish an event from the admin panel to add it here.</p>}
-        <button className="gallery-page-next" type="button" onClick={() => setShowLastPage(true)} aria-label="Next gallery page">›</button>
-      </section> : <section className="gallery-last-page" aria-label="Archive overview">
-        <div className="gallery-last-copy">
-          <p className="gallery-kicker">PHOTOGRAPHY</p>
-          <h2>Our<br />Visual Archives</h2>
-          <p className="gallery-description">Reflections of our grandest nights captured in the photographs across the decades, the vivid memories we’ve proudly shared gathered from incredible milestones of our passionate community.</p>
-        </div>
-        <div className="gallery-mosaic">
-          {events.slice(0, 5).map((event, index) => (
-            <a className={`gallery-mosaic-tile gallery-mosaic-tile-${index}`} href={`/events/${event.slug}`} key={event.slug ?? event.title} aria-label={`View ${event.title} photos`}>
-              <img src={event.gallery?.[0] ?? event.image} alt={`${event.title} archive`} loading="lazy" />
-            </a>
-          ))}
-        </div>
-        <button className="gallery-page-next gallery-page-previous" type="button" onClick={() => setShowLastPage(false)} aria-label="Previous gallery page">‹</button>
-      </section>}
+      </section>
     </main>
   );
 }
