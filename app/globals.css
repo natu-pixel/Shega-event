@@ -1126,6 +1126,31 @@ button { border: 0; }
   .upcoming-countdown-card { min-height: 0; background-position: 60% center; }
 }
 
+/* ─── Negative — inversion bar sweeps the word ──────────────────────────── */
+:root { --ink: currentColor; --ink-2: #FF4FD8; --ink-3: #4FF8FF; }
+.fx-negative {
+  position: relative;
+  font: 600 28px/1.2 "JetBrains Mono", monospace;
+  letter-spacing: .08em;
+  color: var(--ink);
+  padding: .18em .22em;
+}
+.fx-negative::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 34%;
+  background: var(--ink);
+  mix-blend-mode: difference;
+  animation: fx-negative 2.4s ease-in-out infinite alternate;
+}
+@keyframes fx-negative {
+  0%   { left: 0;    transform: translateX(0); }
+  100% { left: 100%; transform: translateX(-100%); }
+}
+
 /* ─── Echo-Verse — ghost copies ripple outward ──────────────────────────── */
 :root { --ink: currentColor; --ink-2: #FF4FD8; --ink-3: #4FF8FF; }
 .fx-echo {
