@@ -396,9 +396,6 @@ export function ScrollStory({ chapters = CHAPTERS, introduction = true }: { chap
             <div className="intro-top">
               <TypewriterIntro />
             </div>
-            <div className="intro-bottom">
-              <p>We bring people together.<br />And make the moment matter.</p>
-            </div>
           </div>
         ) : <h1 className="sr-only">Shega Events: {chapter.name}</h1>}
 
